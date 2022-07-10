@@ -138,12 +138,12 @@ noremap <silent> <a-p> :bd<cr>
 " switch buffer
 " https://2.bp.blogspot.com/-d1GaUBk-Y10/TyFhskmCYRI/AAAAAAAAARQ/CIEx1V7FLqg/s640/vim-and-vigor-004-flying_is_faster_than_cycling.png
 nnoremap <leader>l :ls<cr>:b<space>
-tnoremap <Esc> <C-\><C-n>
+tnoremap <esc> <c-\><c-n>
 
 " vim loses track of syntax sometimes...
 " https://github.com/vim/vim/issues/2790
 " see also: https://stackoverflow.com/questions/27235102/vim-randomly-breaks-syntax-highlighting
-nnoremap m :syntax sync fromstart<CR>
+nnoremap m :syntax sync fromstart<cr>
 autocmd BufEnter * syntax sync fromstart
 
 " fold/unfold
