@@ -119,6 +119,10 @@ nnoremap <f4> :call ToggleIde()<cr>
 " add terminal buffer
 nnoremap <leader>t :below 10sp term://bash<cr>i
 
+" browse terminal command history
+tnoremap <c-p> <up>
+tnoremap <c-n> <down>
+
 " navigate windows
 tnoremap <c-h> <c-\><c-N><c-w>h
 tnoremap <c-j> <c-\><c-N><c-w>j
