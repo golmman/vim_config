@@ -17,6 +17,7 @@ endif
 call plug#begin()
     Plug 'cespare/vim-toml'
     Plug 'hashivim/vim-terraform'
+    Plug 'jose-elias-alvarez/typescript.nvim'
     Plug 'joshdick/onedark.vim'
     Plug 'neovim/nvim-lspconfig'
     Plug 'pangloss/vim-javascript'
@@ -33,6 +34,12 @@ call plug#end()
 set termguicolors
 syntax on
 colorscheme onedark
+
+"
+" Typescript
+"
+
+lua require("typescript").setup();
 
 "
 " Rust Tools
@@ -108,6 +115,12 @@ function ToggleIde()
     endif
 endfunction
 
+function DeleteCurrentBuffer()
+    let current_buffer = bufnr('')
+    bnext
+    execute 'bd ' . current_buffer
+endfunction
+
 """"""""""""""""""""""""""""
 " Keys / Bindings / Remaps "
 """"""""""""""""""""""""""""
@@ -137,7 +150,8 @@ nnoremap <c-l> <c-w>l
 nnoremap <a-h> :bprev<cr>
 nnoremap <a-l> :bnext<cr>
 noremap <silent> <a-o> :%bd\|e#<cr>
-noremap <silent> <a-p> :bd<cr>
+"noremap <silent> <a-p> :bd<cr>
+noremap <silent> <a-p> :call DeleteCurrentBuffer()<cr>
 
 " switch buffer
 " https://2.bp.blogspot.com/-d1GaUBk-Y10/TyFhskmCYRI/AAAAAAAAARQ/CIEx1V7FLqg/s640/vim-and-vigor-004-flying_is_faster_than_cycling.png
@@ -231,16 +245,18 @@ set number
 set colorcolumn=80
 set hidden
 
+" search
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+
 " autosave
 set updatetime=200
 autocmd CursorHold * :wa
 
 " hide / unlist terminal buffer
 autocmd TermOpen * if bufwinnr('') > 0 | setlocal nobuflisted | endif
-
-" directories for swap files and backup
-set directory=$HOME/.vim/swapfiles//
-set backupdir=$HOME/.vim/backup//
 
 " automatically update buffers that where change externally (eg. git)
 " autoread by itself does not work in terminal, see https://stackoverflow.com/a/20418591/5460583
