@@ -19,6 +19,8 @@ call plug#begin()
     Plug 'hashivim/vim-terraform'
     Plug 'jose-elias-alvarez/typescript.nvim'
     Plug 'joshdick/onedark.vim'
+    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+    Plug 'junegunn/fzf.vim'
     Plug 'neovim/nvim-lspconfig'
     Plug 'pangloss/vim-javascript'
     Plug 'preservim/nerdtree'
@@ -97,7 +99,7 @@ let g:expand_region_text_objects = {
 """""""""""""
 
 function SetupIde()
-    below 10sp term://bash
+    below 10sp term://bash | setlocal filetype=terminal
     NERDTree
 endfunction
 
@@ -129,12 +131,18 @@ let g:mapleader = ','
 
 nnoremap <f4> :call ToggleIde()<cr>
 
+" global search
+autocmd Filetype * nnoremap <buffer> <leader>f :Rg<cr>
+autocmd Filetype nerdtree unmap <buffer> <leader>f
+autocmd Filetype terminal unmap <buffer> <leader>f
+
 " add terminal buffer
 nnoremap <leader>t :below 10sp term://bash<cr>i
 
 " browse terminal command history
 tnoremap <c-p> <up>
 tnoremap <c-n> <down>
+tnoremap <esc> <c-\><c-n>
 
 " navigate windows
 tnoremap <c-h> <c-\><c-N><c-w>h
@@ -149,14 +157,12 @@ nnoremap <c-l> <c-w>l
 " cycle through buffers
 nnoremap <a-h> :bprev<cr>
 nnoremap <a-l> :bnext<cr>
-noremap <silent> <a-o> :%bd\|e#<cr>
-"noremap <silent> <a-p> :bd<cr>
 noremap <silent> <a-p> :call DeleteCurrentBuffer()<cr>
+"noremap <silent> <a-o> :%bd\|e#<cr>
 
 " switch buffer
 " https://2.bp.blogspot.com/-d1GaUBk-Y10/TyFhskmCYRI/AAAAAAAAARQ/CIEx1V7FLqg/s640/vim-and-vigor-004-flying_is_faster_than_cycling.png
 nnoremap <leader>l :ls<cr>:b<space>
-tnoremap <esc> <c-\><c-n>
 
 " vim loses track of syntax sometimes...
 " https://github.com/vim/vim/issues/2790
@@ -288,6 +294,7 @@ set softtabstop=4
 set clipboard=unnamedplus
 
 " filetypes
+autocmd BufEnter * if &filetype == "" | setlocal ft=unknown | endif
 autocmd BufNewFile,BufRead *.vue set filetype=html
 autocmd BufNewFile,BufRead *. set filetype=sh
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
