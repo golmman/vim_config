@@ -137,7 +137,8 @@ autocmd Filetype nerdtree unmap <buffer> <leader>f
 autocmd Filetype terminal unmap <buffer> <leader>f
 
 " add terminal buffer
-nnoremap <leader>t :below 10sp term://bash<cr>i
+"nnoremap <leader>ht :split 10sp <bar> term<cr>
+nnoremap <leader>t :vsplit <bar> term<cr>
 
 " browse terminal command history
 tnoremap <c-p> <up>
@@ -295,6 +296,7 @@ set clipboard=unnamedplus
 
 " filetypes
 autocmd BufEnter * if &filetype == "" | setlocal ft=unknown | endif
+autocmd TermOpen * set ft=terminal
 autocmd BufNewFile,BufRead *.vue set filetype=html
 autocmd BufNewFile,BufRead *. set filetype=sh
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
