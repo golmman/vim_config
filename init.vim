@@ -99,7 +99,7 @@ let g:expand_region_text_objects = {
 """""""""""""
 
 function SetupIde()
-    below 10sp term://bash | setlocal filetype=terminal
+    below 15sp term://bash | setlocal filetype=terminal
     NERDTree
 endfunction
 
