@@ -53,6 +53,8 @@ lua require('rust-tools').setup({})
 " NERDTree
 "
 
+let NERDTreeShowHidden=1
+
 autocmd FileType nerdtree nmap <buffer> <CR> go
 
 " If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
