@@ -125,6 +125,15 @@ function DeleteCurrentBuffer()
     execute 'bd ' . current_buffer
 endfunction
 
+function CloseHiddenBuffers()
+    let buffers = nvim_list_bufs()
+    for buffer in buffers
+        if getbufinfo(buffer)[0].hidden == 1
+            silent exec 'bw' buffer
+        endif
+    endfor
+endfunction
+
 """"""""""""""""""""""""""""
 " Keys / Bindings / Remaps "
 """"""""""""""""""""""""""""
@@ -132,6 +141,9 @@ endfunction
 let g:mapleader = ','
 
 nnoremap <f4> :call ToggleIde()<cr>
+
+" testing stuff
+"nnoremap <a-x> :echo getbufinfo(bufnr(''))[0].listed<cr>
 
 " global search
 autocmd Filetype * nnoremap <buffer> <leader>f :Rg<cr>
@@ -161,7 +173,7 @@ nnoremap <c-l> <c-w>l
 nnoremap <a-h> :bprev<cr>
 nnoremap <a-l> :bnext<cr>
 noremap <silent> <a-p> :call DeleteCurrentBuffer()<cr>
-"noremap <silent> <a-o> :%bd\|e#<cr>
+nnoremap <silent> <a-o> :call CloseHiddenBuffers()<cr>
 
 " switch buffer
 " https://2.bp.blogspot.com/-d1GaUBk-Y10/TyFhskmCYRI/AAAAAAAAARQ/CIEx1V7FLqg/s640/vim-and-vigor-004-flying_is_faster_than_cycling.png
