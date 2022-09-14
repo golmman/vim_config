@@ -266,7 +266,7 @@ set number
 set colorcolumn=80
 set hidden
 set title
-set titlestring=%{getcwd()}
+set titlestring=%{fnamemodify(getcwd(),\":t\")}
 
 " search
 set incsearch
