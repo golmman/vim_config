@@ -265,6 +265,8 @@ set laststatus=2
 set number
 set colorcolumn=80
 set hidden
+set title
+set titlestring=%{getcwd()}
 
 " search
 set incsearch
