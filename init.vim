@@ -119,6 +119,14 @@ function ToggleIde()
     endif
 endfunction
 
+function ToggleModifiable()
+    if &modifiable
+        set nomodifiable
+    else
+        set modifiable
+    endif
+endfunction
+
 function DeleteCurrentBuffer()
     let current_buffer = bufnr('')
     bnext
@@ -141,6 +149,7 @@ endfunction
 let g:mapleader = ','
 
 nnoremap <f4> :call ToggleIde()<cr>
+nnoremap <a-space> :call ToggleModifiable()<cr>
 
 " testing stuff
 "nnoremap <a-x> :echo getbufinfo(bufnr(''))[0].listed<cr>
@@ -267,6 +276,7 @@ set colorcolumn=80
 set hidden
 set title
 set titlestring=%{fnamemodify(getcwd(),\":t\")}
+let g:markdown_folding = 1
 
 " search
 set incsearch
