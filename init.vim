@@ -41,7 +41,8 @@ colorscheme onedark
 " Typescript
 "
 
-lua require("typescript").setup();
+" broken??
+"lua require("typescript").setup();
 
 "
 " Rust Tools
@@ -277,6 +278,9 @@ set hidden
 set title
 set titlestring=%{fnamemodify(getcwd(),\":t\")}
 let g:markdown_folding = 1
+
+" disable mouse
+set mouse=
 
 " search
 set incsearch
