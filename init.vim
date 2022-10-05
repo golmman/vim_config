@@ -155,6 +155,9 @@ nnoremap <a-space> :call ToggleModifiable()<cr>
 " testing stuff
 "nnoremap <a-x> :echo getbufinfo(bufnr(''))[0].listed<cr>
 
+" trigger code completion
+inoremap <c-space> <c-x><c-o>
+
 " global search
 autocmd Filetype * nnoremap <buffer> <leader>f :Rg<cr>
 autocmd Filetype nerdtree unmap <buffer> <leader>f
@@ -226,10 +229,10 @@ nnoremap <leader>D "+D
 vnoremap <leader>d "+d
 
 " lsp
-nnoremap <silent> <m-q> <cmd>lua vim.lsp.buf.signature_help()<CR>
-nnoremap <silent> <m-w> <cmd>lua vim.lsp.buf.hover()<CR>
-nnoremap <silent> <m-e> <cmd>lua vim.lsp.buf.code_action()<CR>
-nnoremap <silent> <m-r> <cmd>lua vim.lsp.buf.rename()<CR>
+inoremap <silent> <a-q> <cmd>lua vim.lsp.buf.signature_help()<cr>
+nnoremap <silent> <a-w> <cmd>lua vim.lsp.buf.hover()<cr>
+nnoremap <silent> <a-e> <cmd>lua vim.lsp.buf.code_action()<cr>
+nnoremap <silent> <a-r> <cmd>lua vim.lsp.buf.rename()<cr>
 
 " movement with static cursor
 nnoremap <m-j> Mj<c-e>
@@ -266,7 +269,6 @@ autocmd FileType terraform  nnoremap <buffer> <a-c> :!cd %:h; terraform validate
 
 set listchars=trail:·,extends:>,precedes:<,tab:→→
 set list
-set cursorline
 set signcolumn=yes
 set wildmenu
 set showcmd
@@ -279,8 +281,18 @@ set title
 set titlestring=%{fnamemodify(getcwd(),\":t\")}
 let g:markdown_folding = 1
 
+" show cursorline only in active window
+augroup BgHighlight
+    autocmd!
+    autocmd WinEnter * set cursorline
+    autocmd WinLeave * set nocursorline
+augroup END
+
 " disable mouse
 set mouse=
+
+" code completion
+set completeopt=menuone,noselect
 
 " search
 set incsearch
