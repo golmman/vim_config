@@ -17,7 +17,6 @@ endif
 call plug#begin()
     Plug 'cespare/vim-toml'
     Plug 'hashivim/vim-terraform'
-    Plug 'jose-elias-alvarez/typescript.nvim'
     Plug 'joshdick/onedark.vim'
     Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
     Plug 'junegunn/fzf.vim'
@@ -29,25 +28,16 @@ call plug#begin()
     Plug 'vim-airline/vim-airline'
 call plug#end()
 
-"
 " Colors / onedark
-"
-
 set termguicolors
 syntax on
 colorscheme onedark
 
-"
 " Typescript
-"
+" https://terminalroot.com/how-to-configure-lsp-for-typescript-in-neovim/
+lua require('lspconfig').tsserver.setup {}
 
-" broken??
-"lua require("typescript").setup();
-
-"
 " Rust Tools
-"
-
 lua require('rust-tools').setup({})
 
 "
@@ -141,6 +131,7 @@ function CloseHiddenBuffers()
             silent exec 'bw' buffer
         endif
     endfor
+    silent redrawtabline
 endfunction
 
 """"""""""""""""""""""""""""
