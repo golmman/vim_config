@@ -16,6 +16,7 @@ endif
 
 call plug#begin()
     Plug 'cespare/vim-toml'
+    Plug 'evanleck/vim-svelte'
     Plug 'hashivim/vim-terraform'
     Plug 'joshdick/onedark.vim'
     Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -57,6 +58,7 @@ autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_
 "
 
 let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#formatter = 'jsformatter'
 let g:airline_theme='onedark'
 
 "
