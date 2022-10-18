@@ -92,11 +92,16 @@ let g:expand_region_text_objects = {
 """""""""""""
 
 function SetupIde()
+    " show directory name as title
+    set titlestring=nvim\ \|\ %{fnamemodify(getcwd(),\":t\")}\/
+
     below 15sp term://bash | setlocal filetype=terminal
     NERDTree
 endfunction
 
 function DestroyIde()
+    set titlestring=nvim\ \|\ %f
+
     NERDTreeClose
     bw! term://
 endfunction
@@ -269,7 +274,7 @@ set number
 set colorcolumn=80
 set hidden
 set title
-set titlestring=%{fnamemodify(getcwd(),\":t\")}
+set titlestring=nvim\ \|\ %f
 let g:markdown_folding = 1
 
 " show cursorline only in active window
