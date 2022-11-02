@@ -331,6 +331,12 @@ set expandtab
 set shiftwidth=4
 set softtabstop=4
 
+" indent / tab width based on file type (prettier defaults to 2)
+autocmd FileType javascript setlocal shiftwidth=2 softtabstop=2 expandtab
+autocmd FileType json       setlocal shiftwidth=2 softtabstop=2 expandtab
+autocmd FileType markdown   setlocal shiftwidth=2 softtabstop=2 expandtab
+autocmd FileType typescript setlocal shiftwidth=2 softtabstop=2 expandtab
+
 " use the clipboard as the only register
 set clipboard=unnamedplus
 
