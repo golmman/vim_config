@@ -183,8 +183,16 @@ nnoremap <c-k> <c-w>k
 nnoremap <c-l> <c-w>l
 
 " cycle through buffers
-nnoremap <a-h> :bprev<cr>
-nnoremap <a-l> :bnext<cr>
+"nnoremap <a-h> :bprev<cr>
+"nnoremap <a-l> :bnext<cr>
+autocmd Filetype * nnoremap <buffer> <a-h> :bprev<cr>
+autocmd Filetype nerdtree unmap <buffer> <a-h>
+autocmd Filetype terminal unmap <buffer> <a-h>
+
+autocmd Filetype * nnoremap <buffer> <a-l> :bnext<cr>
+autocmd Filetype nerdtree unmap <buffer> <a-l>
+autocmd Filetype terminal unmap <buffer> <a-l>
+
 noremap <silent> <a-p> :call DeleteCurrentBuffer()<cr>
 nnoremap <silent> <a-o> :call CloseHiddenBuffers()<cr>
 
@@ -249,7 +257,7 @@ autocmd FileType javascript nnoremap <buffer> <a-f> :!cd %:h; npx prettier --wri
 autocmd FileType json       nnoremap <buffer> <a-f> :!cd %:h; npx prettier --write %:t<cr>:e<cr>
 autocmd FileType markdown   nnoremap <buffer> <a-f> :!cd %:h; npx prettier --write %:t<cr>:e<cr>
 autocmd FileType python     nnoremap <buffer> <a-f> :!cd %:h; python3 -m black %:t<cr>:e<cr>
-autocmd FileType rust       nnoremap <buffer> <a-f> :!rustfmt %<cr>:e<cr>
+autocmd FileType rust       nnoremap <buffer> <a-f> :!rustfmt +nightly %<cr>:e<cr>
 autocmd FileType svg        nnoremap <buffer> <a-f> :!cd %:h; npx prettier --write %:t<cr>:e<cr>
 autocmd FileType vue        nnoremap <buffer> <a-f> :!cd %:h; npx prettier --write %:t<cr>:e<cr>
 autocmd FileType terraform  nnoremap <buffer> <a-f> :!cd %:h; terraform fmt %:t -no-color<cr>:e<cr>
@@ -325,7 +333,6 @@ hi MatchParen cterm=bold,underline ctermbg=none ctermfg=none
 " splits
 set splitbelow
 set splitright
-
 
 " indent
 filetype plugin indent on
