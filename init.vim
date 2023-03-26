@@ -99,6 +99,7 @@ function SetupIde()
     " show directory name as title
     set titlestring=nvim\ \|\ %{fnamemodify(getcwd(),\":t\")}\/
 
+    " TODO: work with 'buftype' instead, e.g. https://stackoverflow.com/a/57904110
     below 15sp term://bash | setlocal filetype=terminal
     NERDTree
 endfunction
