@@ -95,12 +95,21 @@ let g:expand_region_text_objects = {
 " Functions "
 """""""""""""
 
+function SetTerminalSize()
+    let termids = filter(range(1, bufnr('$')), 'bufexists(v:val) && getbufvar(v:val, "my_term", 0)')
+    let termid = termids[0]
+    let winids = win_findbuf(termid)
+    let winid = winids[0]
+    call win_execute(winid, "res 15")
+    redraw!
+endfunction
+
 function SetupIde()
     " show directory name as title
     set titlestring=nvim\ \|\ %{fnamemodify(getcwd(),\":t\")}\/
 
     " TODO: work with 'buftype' instead, e.g. https://stackoverflow.com/a/57904110
-    below 15sp term://bash | setlocal filetype=terminal
+    below 15sp term://bash | setlocal filetype=terminal | let b:my_term = 1
     NERDTree
 endfunction
 
@@ -360,3 +369,6 @@ autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 " prevent automatic comments when pressing 'o' or 'O'
 " this needs to be set after plugins set their options
 autocmd FileType * setlocal formatoptions-=c formatoptions-=o
+
+" set size of terminal to a fixed size after window resize
+autocmd VimResized * exe ":call SetTerminalSize()"
