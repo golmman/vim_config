@@ -1,4 +1,5 @@
 if !has('nvim')
+
     echo 'this .vimrc is optimized for nvim, so it is not sourced here'
     finish
 endif
@@ -18,7 +19,10 @@ call plug#begin()
     Plug 'cespare/vim-toml'
     Plug 'evanleck/vim-svelte'
     Plug 'hashivim/vim-terraform'
+
     Plug 'joshdick/onedark.vim'
+    "Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
+
     Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
     Plug 'junegunn/fzf.vim'
     Plug 'neovim/nvim-lspconfig'
@@ -26,13 +30,16 @@ call plug#begin()
     Plug 'preservim/nerdtree'
     Plug 'simrat39/rust-tools.nvim'
     Plug 'terryma/vim-expand-region'
+
     Plug 'vim-airline/vim-airline'
+    "Plug 'nvim-lualine/lualine.nvim'
 call plug#end()
 
 " Colors / onedark
 set termguicolors
 syntax on
 colorscheme onedark
+"colorscheme tokyonight
 
 " Typescript
 " https://terminalroot.com/how-to-configure-lsp-for-typescript-in-neovim/
@@ -62,6 +69,14 @@ let g:airline#extensions#tabline#left_sep = '  '
 let g:airline#extensions#tabline#left_alt_sep = '█'
 let g:airline#extensions#tabline#formatter = 'jsformatter'
 let g:airline_theme='onedark'
+"let g:airline_theme='tokyonight-night'
+
+"
+" Lualine
+"
+
+" see bottom
+
 
 "
 " vim-expand-region
@@ -167,6 +182,10 @@ nnoremap <a-space> :call ToggleModifiable()<cr>
 
 " trigger code completion
 inoremap <c-space> <c-x><c-o>
+
+" improve movement in wrapped lines, see https://stackoverflow.com/a/21000307
+noremap <expr> j v:count ? 'j' : 'gj'
+noremap <expr> k v:count ? 'k' : 'gk'
 
 " global search
 autocmd Filetype * nnoremap <buffer> <leader>f :Rg<cr>
@@ -372,3 +391,62 @@ autocmd FileType * setlocal formatoptions-=c formatoptions-=o
 
 " set size of terminal to a fixed size after window resize
 autocmd VimResized * exe ":call SetTerminalSize()"
+
+
+" Lua hightlighting is broken, so we have to put this at the end of the file for now
+" https://github.com/neovim/neovim/issues/20456
+
+"
+" Lualine
+"
+
+"lua << EOF
+"require('lualine').setup(
+"{
+"    options = {
+"        icons_enabled = false,
+"        theme = 'auto',
+"        component_separators = { left = '', right = ''},
+"        section_separators = { left = '', right = ''},
+"        disabled_filetypes = {
+"            'nerdtree',
+"        },
+"        ignore_focus = {'nerdtree'},
+"        always_divide_middle = true,
+"        globalstatus = false,
+"        refresh = {
+"            statusline = 1000,
+"            tabline = 1000,
+"            winbar = 1000,
+"        }
+"    },
+"    sections = {
+"        lualine_a = {'mode'},
+"        lualine_b = {'branch', 'diff', 'diagnostics'},
+"        lualine_c = {'filename'},
+"        lualine_x = {'encoding', 'fileformat', 'filetype'},
+"        lualine_y = {'progress'},
+"        lualine_z = {'location'}
+"    },
+"    inactive_sections = {
+"        lualine_a = {},
+"        lualine_b = {},
+"        lualine_c = {'filename'},
+"        lualine_x = {'location'},
+"        lualine_y = {},
+"        lualine_z = {}
+"    },
+"    tabline = {
+"        lualine_a = {'buffers'},
+"        lualine_b = {},
+"        lualine_c = {},
+"        lualine_x = {},
+"        lualine_y = {},
+"        lualine_z = {'tabs'},
+"    },
+"    winbar = {},
+"    inactive_winbar = {},
+"    extensions = {}
+"}
+")
+"EOF
