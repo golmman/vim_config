@@ -325,6 +325,10 @@ augroup BgHighlight
     autocmd WinLeave * set nocursorline
 augroup END
 
+" wrap and linebreak
+set wrap
+set linebreak
+
 " disable mouse
 set mouse=
 
