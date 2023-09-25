@@ -28,7 +28,6 @@ call plug#begin()
     Plug 'neovim/nvim-lspconfig'
     Plug 'pangloss/vim-javascript'
     Plug 'preservim/nerdtree'
-    Plug 'simrat39/rust-tools.nvim'
     Plug 'terryma/vim-expand-region'
 
     Plug 'vim-airline/vim-airline'
@@ -41,12 +40,19 @@ syntax on
 colorscheme onedark
 "colorscheme tokyonight
 
+"
+" LSP Config
+"
+" see https://github.com/neovim/nvim-lspconfig for general configuration
+
 " Typescript
-" https://terminalroot.com/how-to-configure-lsp-for-typescript-in-neovim/
 lua require('lspconfig').tsserver.setup {}
 
-" Rust Tools
-lua require('rust-tools').setup({})
+" Rust
+" neovim 0.9.0 introduces 'semantic token' handling in lsp, which seems not to be compatible with onedark colorscheme
+" on_attach solution as documenten, but throws an error...: https://github.com/neovim/neovim/issues/23061
+" on_init solution/workaround: https://github.com/neovim/nvim-lspconfig/issues/2542
+lua require('lspconfig').rust_analyzer.setup { settings = { ['rust-analyzer'] = {}, }, on_init=function(client) client.server_capabilities.semanticTokensProvider = false end, }
 
 "
 " NERDTree
