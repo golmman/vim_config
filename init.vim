@@ -40,6 +40,22 @@ syntax on
 colorscheme onedark
 "colorscheme tokyonight
 
+" Background colors for active vs inactive windows
+" with ideas from https://caleb89taylor.medium.com/customizing-individual-neovim-windows-4a08f2d02b4e
+" Normal bg color is #282c34
+hi ActiveWindow guibg=#1e2127
+let inactive_window_color = synIDattr(synIDtrans(hlID('Normal')), 'bg')
+execute 'hi InactiveWindow guibg=' . inactive_window_color
+
+augroup WindowManagement
+  autocmd!
+  autocmd WinEnter * call Handle_Win_Enter()
+augroup END
+
+function! Handle_Win_Enter()
+  setlocal winhighlight=Normal:ActiveWindow,NormalNC:InactiveWindow
+endfunction
+
 "
 " LSP Config
 "
