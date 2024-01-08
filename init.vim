@@ -219,6 +219,8 @@ autocmd Filetype terminal unmap <buffer> <leader>f
 nnoremap <leader>t :vsplit <bar> term<cr>
 
 " browse terminal command history
+tnoremap <a-k> <up>
+tnoremap <a-j> <down>
 tnoremap <c-p> <up>
 tnoremap <c-n> <down>
 tnoremap <esc> <c-\><c-n>
