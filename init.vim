@@ -19,6 +19,7 @@ call plug#begin()
     Plug 'cespare/vim-toml'
     Plug 'evanleck/vim-svelte'
     Plug 'hashivim/vim-terraform'
+    Plug 'golmman/hurl_vim'
 
     Plug 'joshdick/onedark.vim'
     "Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
