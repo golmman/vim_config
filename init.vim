@@ -274,21 +274,28 @@ nnoremap <enter> o<esc>
 
 " delete/overwrite
 nnoremap x "_x
+vnoremap x "_x
 nnoremap c "_c
-nnoremap C "_C
 vnoremap c "_c
-nnoremap d "_d
+nnoremap C "_C
+vnoremap C "_C
 nnoremap D "_D
+vnoremap D "_D
+nnoremap d "_d
 vnoremap d "_d
 vnoremap p pgvy
 
 " cut
+nnoremap <leader>x "+x
+vnoremap <leader>x "+x
 nnoremap <leader>c "+c
-nnoremap <leader>C "+C
 vnoremap <leader>c "+c
+nnoremap <leader>C "+C
+vnoremap <leader>C "+C
 nnoremap <leader>d "+d
-nnoremap <leader>D "+D
 vnoremap <leader>d "+d
+nnoremap <leader>D "+D
+vnoremap <leader>D "+D
 
 " lsp
 inoremap <silent> <a-q> <cmd>lua vim.lsp.buf.signature_help()<cr>
