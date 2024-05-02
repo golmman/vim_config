@@ -50,12 +50,42 @@ execute 'hi InactiveWindow guibg=' . inactive_window_color
 
 augroup WindowManagement
   autocmd!
-  autocmd WinEnter * call Handle_Win_Enter()
+  autocmd WinEnter * call HandleWinEnter()
 augroup END
 
-function! Handle_Win_Enter()
-  setlocal winhighlight=Normal:ActiveWindow,NormalNC:InactiveWindow
+function! HandleWinEnter()
+  "setlocal winhighlight=Normal:ActiveWindow,NormalNC:InactiveWindow
 endfunction
+
+" Background color for todo repo
+function! SyncTodoRepo(timer_id)
+    let a = system('git pull')
+    let a = system('git add .')
+    let a = system('git commit -m "auto update via vim"')
+    let a = system('git push')
+    echo 'synced at: ' . strftime("%H:%M:%S")
+endfunction
+
+function! RestartTodoTimer()
+    if exists('g:todo_timer')
+        call timer_stop(g:todo_timer)
+    endif
+    let g:todo_timer = timer_start(30000, 'SyncTodoRepo', {'repeat': -1})
+endfunction
+
+function! SetTodoRepoIntegration()
+    let is_git_root = system('git rev-parse --show-toplevel 2>/dev/null') =~ system('pwd')
+    if is_git_root
+        let is_todo_repo = system('git config --get remote.origin.url') =~ 'github.com/golmman/todo'
+        if is_todo_repo
+            highlight Normal guibg=#290135
+            autocmd CursorHold * call RestartTodoTimer()
+            autocmd CursorHoldI * call RestartTodoTimer()
+        endif
+    endif
+endfunction
+
+call SetTodoRepoIntegration()
 
 "
 " LSP Config
