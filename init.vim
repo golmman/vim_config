@@ -58,34 +58,79 @@ function! HandleWinEnter()
 endfunction
 
 " Background color for todo repo
+let g:todo_repo_url = 'github.com/golmman/todo'
+let g:todo_repo_bg_color = '#13011e'
+let g:todo_repo_sync_timer_interval = 30000
+let g:todo_repo_init = '' "'call SetupIde()'
+
 function! SyncTodoRepo(timer_id)
     let a = system('git pull')
     let a = system('git add .')
     let a = system('git commit -m "auto update via vim"')
     let a = system('git push')
-    echo 'synced at: ' . strftime("%H:%M:%S")
+
+    " refresh all buffers which have a file name
+    let old_confirm = &confirm
+    set noconfirm
+    bufdo! if expand('%:p') != '' | edit | endif
+    redraw
+    let &confirm = old_confirm
+    unlet old_confirm
+
+    echo 'synced at ' . strftime("%H:%M:%S")
 endfunction
 
-function! RestartTodoTimer()
+function! PauseTodoTimer()
+    let g:todo_timer_pause = 1
+    call StopTodoTimer()
+    echo 'sync paused at ' . strftime("%H:%M:%S")
+endfunction
+
+function! UnpauseTodoTimer()
+    let g:todo_timer_pause = 0
+    call SyncTodoRepo(0)
+    call RestartTodoTimer()
+endfunction
+
+function StopTodoTimer()
     if exists('g:todo_timer')
         call timer_stop(g:todo_timer)
     endif
-    let g:todo_timer = timer_start(30000, 'SyncTodoRepo', {'repeat': -1})
+endfunction
+
+function! RestartTodoTimer()
+    if exists('g:todo_timer_pause') && g:todo_timer_pause
+        return
+    endif
+
+    call StopTodoTimer()
+
+    let g:todo_timer = timer_start(g:todo_repo_sync_timer_interval, 'SyncTodoRepo', {'repeat': -1})
 endfunction
 
 function! SetTodoRepoIntegration()
     let is_git_root = system('git rev-parse --show-toplevel 2>/dev/null') =~ system('pwd')
     if is_git_root
-        let is_todo_repo = system('git config --get remote.origin.url') =~ 'github.com/golmman/todo'
+        let is_todo_repo = system('git config --get remote.origin.url') =~ g:todo_repo_url
         if is_todo_repo
-            highlight Normal guibg=#290135
+            execute 'highlight Normal guibg=' . g:todo_repo_bg_color
+
             autocmd CursorHold * call RestartTodoTimer()
             autocmd CursorHoldI * call RestartTodoTimer()
+
+            autocmd FocusLost * call PauseTodoTimer()
+            autocmd FocusGained * call UnpauseTodoTimer()
+
+            autocmd VimLeavePre * call SyncTodoRepo(0)
+
+            call SyncTodoRepo(0)
+
+            execute g:todo_repo_init
         endif
     endif
 endfunction
 
-call SetTodoRepoIntegration()
+autocmd VimEnter * call SetTodoRepoIntegration()
 
 "
 " LSP Config
