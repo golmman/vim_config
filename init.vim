@@ -63,7 +63,13 @@ let g:todo_repo_bg_color = '#13011e'
 let g:todo_repo_sync_timer_interval = 30000
 let g:todo_repo_init = '' "'call SetupIde()'
 
+let g:todo_repo_insert_mode = 0
+
 function! SyncTodoRepo(timer_id)
+    if g:todo_repo_insert_mode
+        return
+    endif
+
     let a = system('git pull')
     let a = system('git add .')
     let a = system('git commit -m "auto update via vim"')
@@ -72,7 +78,9 @@ function! SyncTodoRepo(timer_id)
     " refresh all buffers which have a file name
     let old_confirm = &confirm
     set noconfirm
+    let current_buffer = bufnr('%')
     bufdo! if expand('%:p') != '' | edit | endif
+    execute 'buffer ' . current_buffer
     redraw
     let &confirm = old_confirm
     unlet old_confirm
@@ -83,6 +91,7 @@ endfunction
 function! PauseTodoTimer()
     let g:todo_timer_pause = 1
     call StopTodoTimer()
+    call SyncTodoRepo(0)
     echo 'sync paused at ' . strftime("%H:%M:%S")
 endfunction
 
@@ -114,6 +123,9 @@ function! SetTodoRepoIntegration()
         let is_todo_repo = system('git config --get remote.origin.url') =~ g:todo_repo_url
         if is_todo_repo
             execute 'highlight Normal guibg=' . g:todo_repo_bg_color
+
+            autocmd InsertEnter * let g:todo_repo_insert_mode = 1
+            autocmd InsertLeave * let g:todo_repo_insert_mode = 0
 
             autocmd CursorHold * call RestartTodoTimer()
             autocmd CursorHoldI * call RestartTodoTimer()
