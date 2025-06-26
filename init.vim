@@ -32,6 +32,7 @@ call plug#begin()
     Plug 'terryma/vim-expand-region'
 
     Plug 'vim-airline/vim-airline'
+    Plug 'vim-airline/vim-airline-themes'
     "Plug 'nvim-lualine/lualine.nvim'
 
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -144,7 +145,8 @@ function! SetTodoRepoIntegration()
     endif
 endfunction
 
-autocmd VimEnter * call SetTodoRepoIntegration()
+" disable for now
+"autocmd VimEnter * call SetTodoRepoIntegration()
 
 "
 " LSP Config
@@ -216,19 +218,35 @@ require'nvim-treesitter.configs'.setup {
 EOF
 
 " Typescript
-lua require('lspconfig').tsserver.setup {}
+"lua require('lspconfig').tsserver.setup {}
+lua require'lspconfig'.ts_ls.setup{ init_option = { preferences = { importModuleSpecifierPreference = 'non-relative' } } }
+
+" Typescript, JS, TS, graphql, svelte, etc., see https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#biome
+"lua require'lspconfig'.biome.setup{}
+
+" TabbyML
+"lua require('lspconfig').tabby_ml.setup {}
+
+" Svelte
+lua require'lspconfig'.svelte.setup{}
+
+" Scala Metals, not the plugin but https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#metals
+lua require'lspconfig'.metals.setup{}
 
 " Rust
 " neovim 0.9.0 introduces 'semantic token' handling in lsp, which seems not to be compatible with onedark colorscheme
 " on_attach solution as documenten, but throws an error...: https://github.com/neovim/neovim/issues/23061
 " on_init solution/workaround: https://github.com/neovim/nvim-lspconfig/issues/2542
-lua require('lspconfig').rust_analyzer.setup { settings = { ['rust-analyzer'] = {}, }, on_init=function(client) client.server_capabilities.semanticTokensProvider = false end, }
+
+"lua require('lspconfig').rust_analyzer.setup { settings = { ['rust-analyzer'] = {}, }, on_init=function(client) client.server_capabilities.semanticTokensProvider = false end, }
+lua require'lspconfig'.rust_analyzer.setup{}
 
 "
 " NERDTree
 "
 
 let NERDTreeShowHidden=1
+let NERDTreeNaturalSort=1
 
 autocmd FileType nerdtree nmap <buffer> <CR> go
 
@@ -246,6 +264,12 @@ let g:airline#extensions#tabline#left_alt_sep = '█'
 let g:airline#extensions#tabline#formatter = 'jsformatter'
 let g:airline_theme='onedark'
 "let g:airline_theme='tokyonight-night'
+
+let g:onedark_color_overrides = {
+\ "StatusLineTerm": {"fg": "#FF0000", "cterm": "2", "cterm16": "2" },
+\}
+
+hi StatusLine ctermbg=Grey
 
 "
 " Lualine
@@ -344,9 +368,25 @@ function CloseHiddenBuffers()
     silent redrawtabline
 endfunction
 
-""""""""""""""""""""""""""""
-" Keys / Bindings / Remaps "
-""""""""""""""""""""""""""""
+function TermUp()
+    execute 'leftabove horizontal split term://bash'
+endfunction
+
+function TermDown()
+    execute 'rightbelow horizontal split term://bash'
+endfunction
+
+function TermRight()
+    execute 'rightbelow vertical split term://bash'
+endfunction
+
+function TermLeft()
+    execute 'leftabove vertical split term://bash'
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""
+" Keys / Keybindings / Bindings / Remaps "
+""""""""""""""""""""""""""""""""""""""""""
 
 let g:mapleader = ','
 
@@ -378,6 +418,7 @@ tnoremap <a-j> <down>
 tnoremap <c-p> <up>
 tnoremap <c-n> <down>
 tnoremap <esc> <c-\><c-n>
+tnoremap <c-[> <c-\><c-n>
 
 " navigate windows
 tnoremap <c-h> <c-\><c-N><c-w>h
@@ -388,6 +429,12 @@ nnoremap <c-h> <c-w>h
 nnoremap <c-j> <c-w>j
 nnoremap <c-k> <c-w>k
 nnoremap <c-l> <c-w>l
+
+" resize splits
+noremap <a-left> :vertical resize -1<cr>
+noremap <a-right> :vertical resize +1<cr>
+noremap <a-up> :horizontal resize +1<cr>
+noremap <a-down> :horizontal resize -1<cr>
 
 " cycle through buffers
 "nnoremap <a-h> :bprev<cr>
@@ -451,10 +498,13 @@ nnoremap <leader>D "+D
 vnoremap <leader>D "+D
 
 " lsp
-inoremap <silent> <a-q> <cmd>lua vim.lsp.buf.signature_help()<cr>
-nnoremap <silent> <a-w> <cmd>lua vim.lsp.buf.hover()<cr>
-nnoremap <silent> <a-e> <cmd>lua vim.lsp.buf.code_action()<cr>
-nnoremap <silent> <a-r> <cmd>lua vim.lsp.buf.rename()<cr>
+inoremap <a-w> <cmd>lua vim.lsp.buf.signature_help()<cr>
+nnoremap <a-w> <cmd>lua vim.lsp.buf.hover()<cr>
+nnoremap <a-e> <cmd>lua vim.lsp.buf.code_action()<cr>
+nnoremap <a-r> <cmd>lua vim.lsp.buf.rename()<cr>
+nnoremap <a-i> <cmd>lua vim.lsp.buf.implementation()<cr>
+nnoremap <a-d> <cmd>lua vim.lsp.buf.definition()<cr>
+nnoremap <a-a> <cmd>lua vim.diagnostic.open_float()<cr>
 
 " movement with static cursor
 nnoremap <m-j> Mj<c-e>
@@ -471,9 +521,11 @@ autocmd FileType javascript nnoremap <buffer> <a-f> :!cd %:h; npx prettier --wri
 autocmd FileType json       nnoremap <buffer> <a-f> :!cd %:h; npx prettier --write %:t<cr>:e<cr>
 autocmd FileType markdown   nnoremap <buffer> <a-f> :!cd %:h; npx prettier --write %:t<cr>:e<cr>
 autocmd FileType python     nnoremap <buffer> <a-f> :!cd %:h; python3 -m black %:t<cr>:e<cr>
-autocmd FileType rust       nnoremap <buffer> <a-f> :!rustfmt +nightly %<cr>:e<cr>
+"autocmd FileType rust       nnoremap <buffer> <a-f> :!rustfmt +nightly %<cr>:e<cr>
+autocmd FileType rust      nnoremap <buffer> <a-f> :lua vim.lsp.buf.format()<cr>
 autocmd FileType svg        nnoremap <buffer> <a-f> :!cd %:h; npx prettier --write %:t<cr>:e<cr>
 autocmd FileType vue        nnoremap <buffer> <a-f> :!cd %:h; npx prettier --write %:t<cr>:e<cr>
+autocmd FileType scala      nnoremap <buffer> <a-f> :lua vim.lsp.buf.format()<cr>
 autocmd FileType svelte     nnoremap <buffer> <a-f> :!cd %:h; npx prettier --write %:t<cr>:e<cr>
 autocmd FileType terraform  nnoremap <buffer> <a-f> :!cd %:h; terraform fmt %:t -no-color<cr>:e<cr>
 autocmd FileType typescript nnoremap <buffer> <a-f> :!cd %:h; npx prettier --write %:t<cr>:e<cr>
