@@ -35,7 +35,7 @@ call plug#begin()
     Plug 'vim-airline/vim-airline-themes'
     "Plug 'nvim-lualine/lualine.nvim'
 
-    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+    Plug 'nvim-treesitter/nvim-treesitter'
 call plug#end()
 
 " Colors / onedark
@@ -155,7 +155,7 @@ endfunction
 
 " Treesitter
 lua << EOF
-require'nvim-treesitter.configs'.setup {
+require'nvim-treesitter'.setup {
   -- A list of parser names, or "all" (the listed parsers MUST always be installed)
   ensure_installed = {
       "c",
