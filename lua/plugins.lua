@@ -1,0 +1,482 @@
+-- Modern Neovim configuration with lazy.nvim
+
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable",
+        lazypath,
+    })
+end
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup({
+    -- Essential plugins
+    {
+        "nvim-lua/plenary.nvim",
+        lazy = true,
+    },
+
+    -- LSP Configuration (kept for server definitions, but using vim.lsp.config API)
+    {
+        "neovim/nvim-lspconfig",
+        event = { "BufReadPre", "BufNewFile" },
+        config = function()
+            -- vim.lsp.config and vim.lsp.enable are used instead of lspconfig
+            -- This plugin is kept for server definitions only
+        end,
+    },
+
+    -- Fuzzy finder with better UI
+    {
+        "nvim-telescope/telescope.nvim",
+        dependencies = { "nvim-lua/plenary.nvim" },
+        cmd = "Telescope",
+        keys = {
+            { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find files" },
+            { "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Live grep" },
+            { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
+            { "<leader>fh", "<cmd>Telescope help_tags<cr>", desc = "Help tags" },
+        },
+        opts = {
+            defaults = {
+                sorting_strategy = "ascending",
+                path_display = { shorten = { len = 1 } },
+            },
+        },
+    },
+
+    -- Completion engine
+    {
+        "hrsh7th/nvim-cmp",
+        version = "v2.x",
+        event = "InsertEnter",
+        dependencies = {
+            "hrsh7th/cmp-nvim-lsp",
+            "hrsh7th/cmp-buffer",
+            "hrsh7th/cmp-path",
+            "hrsh7th/cmp-cmdline",
+        },
+        config = function()
+            local cmp = require("cmp")
+            local luasnip = require("luasnip")
+
+            cmp.setup({
+                snippet = {
+                    expand = function(args)
+                        luasnip.lsp_expand(args.body)
+                    end,
+                },
+                mapping = cmp.mapping.preset.insert({
+                    ["<CR>"] = cmp.mapping.confirm({ select = true }),
+                    ["<Tab>"] = cmp.mapping(function(fallback)
+                        if cmp.visible() then
+                            cmp.select_next_item()
+                        elseif luasnip.expand_or_locally_jumpable() then
+                            luasnip.expand_or_jump()
+                        else
+                            fallback()
+                        end
+                    end, { "i", "s" }),
+                    ["<S-Tab>"] = cmp.mapping(function(fallback)
+                        if cmp.visible() then
+                            cmp.select_prev_item()
+                        elseif luasnip.locally_jumpable(-1) then
+                            luasnip.jump(-1)
+                        else
+                            fallback()
+                        end
+                    end, { "i", "s" }),
+                    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+                    ["<C-f>"] = cmp.mapping.scroll_docs(4),
+                    ["<C-e>"] = cmp.mapping.abort(),
+                }),
+                sources = {
+                    { name = "nvim_lsp" },
+                    { name = "buffer" },
+                    { name = "path" },
+                },
+            })
+
+            cmp.setup.cmdline({ "/", "?" }, {
+                mapping = cmp.mapping.preset.cmdline(),
+                sources = {
+                    { name = "buffer" },
+                },
+            })
+
+            cmp.setup.cmdline(":", {
+                mapping = cmp.mapping.preset.cmdline(),
+                sources = {
+                    { name = "path" },
+                    { name = "cmdline" },
+                },
+            })
+        end,
+    },
+
+    -- Snippet engine
+    {
+        "L3MON4D3/LuaSnip",
+        version = "v2.*",
+        build = "make install_jsregexp",
+        dependencies = {
+            "rafamadriz/friendly-snippets",
+        },
+        config = function()
+            require("luasnip.loaders.from_vscode").lazy_load()
+        end,
+    },
+
+    -- Syntax highlighting
+    {
+        "nvim-treesitter/nvim-treesitter",
+        build = ":TSUpdate",
+        event = { "BufReadPost", "BufNewFile" },
+        main = "nvim-treesitter",
+        opts = {
+            ensure_installed = {
+                "c",
+                "lua",
+                "vim",
+                "vimdoc",
+                "query",
+                "markdown",
+                "markdown_inline",
+                "html",
+                "css",
+                "javascript",
+                "typescript",
+                "rust",
+                "svelte",
+                "bash",
+                "dockerfile",
+                "graphql",
+                "hurl",
+                "json",
+            },
+            sync_install = false,
+            auto_install = true,
+            highlight = {
+                enable = true,
+                disable = function(lang, buf)
+                    local max_filesize = 100 * 1024 -- 100 KB
+                    local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+                    if ok and stats and stats.size > max_filesize then
+                        return true
+                    end
+                end,
+                additional_vim_regex_highlighting = false,
+            },
+            indent = {
+                enable = true,
+            },
+        },
+    },
+
+    -- File explorer (nvim-tree - modern NERDTree replacement)
+    {
+        "nvim-tree/nvim-tree.lua",
+        version = "*",
+        lazy = false,
+        dependencies = {
+            "nvim-tree/nvim-web-devicons",
+        },
+        keys = {
+            { "<leader>e", "<cmd>NvimTreeToggle<CR>", desc = "Toggle file explorer" },
+        },
+        config = function()
+            require("nvim-tree").setup({
+                sort_by = "case_sensitive",
+                view = {
+                    width = 30,
+                },
+                renderer = {
+                    group_empty = true,
+                    icons = {
+                        show = {
+                            file = false,
+                            folder = false,
+                            folder_arrow = false,
+                            git = false,
+                        },
+                    },
+                },
+                filters = {
+                    dotfiles = false,
+                },
+                actions = {
+                    open_file = {
+                        quit_on_open = false,
+                        resize_window = false,
+                        window_picker = {
+                            enable = false,
+                        },
+                    },
+                },
+                hijack_directories = {
+                    enable = false,
+                },
+                git = {
+                    enable = true,
+                    ignore = false,
+                },
+            })
+        end,
+    },
+
+    -- Expand region (text objects)
+    {
+        "terryma/vim-expand-region",
+        keys = {
+            { "<M-,>", "<Plug>(expand_region_shrink)", mode = { "n", "v" }, desc = "Shrink selection" },
+            { "<M-.>", "<Plug>(expand_region_expand)", mode = { "n", "v" }, desc = "Expand selection" },
+        },
+        init = function()
+            vim.g.expand_region_text_objects = {
+                iw = 0,
+                ["i'"] = 1,
+                ['i"'] = 1,
+                ["i`"] = 1,
+                ["i>"] = 1,
+                ["i]"] = 1,
+                ["i}"] = 1,
+                ["i)"] = 1,
+                it = 1,
+                ["a'"] = 1,
+                ['a"'] = 1,
+                ["a`"] = 1,
+                ["a>"] = 1,
+                ["a]"] = 1,
+                ["a}"] = 1,
+                ["a)"] = 1,
+                at = 1,
+            }
+        end,
+    },
+
+    -- Git integration
+    {
+        "lewis6991/gitsigns.nvim",
+        event = { "BufReadPost", "BufNewFile" },
+        config = function()
+            require("gitsigns").setup({
+                on_attach = function(bufnr)
+                    local gs = package.loaded.gitsigns
+
+                    local function map(mode, l, r, opts)
+                        opts = opts or {}
+                        opts.buffer = bufnr
+                        vim.keymap.set(mode, l, r, opts)
+                    end
+
+                    map("n", "]c", function()
+                        if vim.wo.diff then return "]c" end
+                        vim.schedule(function()
+                            gs.next_hunk()
+                        end)
+                        return "<Ignore>"
+                    end, { expr = true, desc = "Next git hunk" })
+
+                    map("n", "[c", function()
+                        if vim.wo.diff then return "[c" end
+                        vim.schedule(function()
+                            gs.prev_hunk()
+                        end)
+                        return "<Ignore>"
+                    end, { expr = true, desc = "Previous git hunk" })
+
+                    map("n", "<leader>hs", gs.stage_hunk, { desc = "Stage git hunk" })
+                    map("n", "<leader>hr", gs.reset_hunk, { desc = "Reset git hunk" })
+                    map("n", "<leader>hp", gs.preview_hunk, { desc = "Preview git hunk" })
+                    map("n", "<leader>hb", function()
+                        gs.blame_line({ full = true })
+                    end, { desc = "Blame line" })
+                end,
+            })
+        end,
+    },
+
+    -- Formatter
+    {
+        "stevearc/conform.nvim",
+        event = { "BufWritePre" },
+        config = function()
+            local conform = require("conform")
+            conform.format({
+                lsp_fallback = true,
+                async = false,
+                timeout_ms = 500,
+            })
+
+            local formatters = {
+                css = { "prettier" },
+                html = { "prettier" },
+                javascript = { "prettier" },
+                json = { "prettier" },
+                markdown = { "prettier" },
+                python = { "black" },
+                rust = { "rustfmt" },
+                scala = { "scalafmt" },
+                svelte = { "prettier" },
+                terraform = { "terraform_fmt" },
+                typescript = { "prettier" },
+                yaml = { "prettier" },
+            }
+
+            conform.formatters_enums.prettier = { "prettier_detailed" }
+
+            conform.setup({
+                format_on_save = {
+                    lsp_fallback = true,
+                    async = false,
+                    timeout_ms = 500,
+                },
+                formatters_by_ft = formatters,
+            })
+
+            vim.keymap.set("n", "<leader>cf", function()
+                conform.format({ lsp_fallback = true, async = false, timeout_ms = 500 })
+            end, { desc = "Format with conform" })
+        end,
+    },
+
+    -- Status line
+    {
+        "nvim-lualine/lualine.nvim",
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        event = { "BufReadPost", "BufNewFile" },
+        config = function()
+            local lualine = require("lualine")
+
+            lualine.setup({
+                options = {
+                    icons_enabled = false,
+                    theme = "onedark",
+                    component_separators = { left = "", right = "" },
+                    section_separators = { left = "", right = "" },
+                    disabled_filetypes = { "NvimTree" },
+                    always_divide_middle = true,
+                    globalstatus = true,
+                },
+                sections = {
+                    lualine_a = { "mode" },
+                    lualine_b = { "branch", "diff", "diagnostics" },
+                    lualine_c = { { "filename", path = 1 } },
+                    lualine_x = { "encoding", "fileformat", "filetype" },
+                    lualine_y = { "progress" },
+                    lualine_z = { "location" },
+                },
+                inactive_sections = {
+                    lualine_a = {},
+                    lualine_b = {},
+                    lualine_c = { { "filename", path = 1 } },
+                    lualine_x = { "location" },
+                    lualine_y = {},
+                    lualine_z = {},
+                },
+                tabline = {
+                    lualine_a = { {
+                        "buffers",
+                        show_filename_only = true,
+                        hide_filename_extension = false,
+                        show_modified_status = true,
+                        mode = 2,
+                        max_length = vim.o.columns,
+                        filetype_names = {
+                            NvimTree = "",
+                        },
+                        buffers_color = {
+                            active = "lualine_b_normal",
+                            inactive = "lualine_b_inactive",
+                        },
+                        symbols = {
+                            modified = " +",
+                            alternate_file = "",
+                            directory = "",
+                        },
+                    } },
+                    lualine_b = {},
+                    lualine_c = {},
+                    lualine_x = {},
+                    lualine_y = {},
+                    lualine_z = { "tabs" },
+                },
+                extensions = { "nvim-tree" },
+            })
+        end,
+    },
+
+    -- Colors
+    {
+        "joshdick/onedark.vim",
+        priority = 1000,
+        config = function()
+            vim.cmd("colorscheme onedark")
+        end,
+    },
+
+    -- File type detection
+    {
+        "sheerun/vim-polyglot",
+        event = { "BufReadPost", "BufNewFile" },
+    },
+
+    -- Svelte
+    {
+        "evanleck/vim-svelte",
+        ft = "svelte",
+    },
+
+    -- Terraform
+    {
+        "hashivim/vim-terraform",
+        ft = { "terraform", "hcl" },
+    },
+
+    -- TOML
+    {
+        "cespare/vim-toml",
+        ft = "toml",
+    },
+
+    -- Hurl
+    {
+        "golmman/hurl_vim",
+        ft = "hurl",
+    },
+
+    -- JavaScript/TypeScript
+    {
+        "pangloss/vim-javascript",
+        ft = { "javascript", "typescript", "javascriptreact", "typescriptreact" },
+    },
+
+    -- JSON
+    {
+        "elzr/vim-json",
+        ft = "json",
+    },
+
+    -- Rust
+    {
+        "rust-lang/rust.vim",
+        ft = "rust",
+    },
+
+    -- Format & lint command for terraform
+    {
+        "MunifTanjim/nui.nvim",
+        lazy = true,
+    },
+}, {
+    change_detection = {
+        notify = false,
+    },
+    install = {
+        colorscheme = { "onedark" },
+    },
+})

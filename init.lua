@@ -1,0 +1,7 @@
+require("options")
+require("functions")
+require("keymaps")
+require("plugins")
+require("lsp")
+require("autocmds")
+require("todo_sync")
