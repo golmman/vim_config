@@ -12,14 +12,7 @@ vim.opt.termguicolors = true
 vim.cmd("syntax on")
 
 -- Colorscheme is set in plugins.lua after onedark.vim is loaded
-
--- Background colors for active vs inactive windows
--- Normal bg color is #282c34
-vim.api.nvim_set_hl(0, "ActiveWindow", { bg = "#1e2127" })
-local inactive_bg = vim.api.nvim_get_hl(0, { name = "Normal" }).bg
-if inactive_bg then
-    vim.api.nvim_set_hl(0, "InactiveWindow", { bg = string.format("#%06x", inactive_bg) })
-end
+-- Window highlight groups will be set in autocmds.lua after colorscheme loads
 
 -- List characters
 vim.opt.listchars = {

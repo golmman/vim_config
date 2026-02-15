@@ -252,13 +252,17 @@ autocmd("CmdlineLeave", {
     end,
 })
 
--- Set cursorline only in active window
+-- Set cursorline and window highlighting
 local bg_highlight_group = augroup("BgHighlight", { clear = true })
+
+-- Apply highlights when entering/leaving windows
 autocmd("WinEnter", {
     group = bg_highlight_group,
     pattern = "*",
     callback = function()
         vim.opt.cursorline = true
+        -- Set active window highlight (darker background)
+        vim.opt_local.winhighlight = "Normal:ActiveWindow,NormalNC:InactiveWindow"
     end,
 })
 autocmd("WinLeave", {
@@ -266,6 +270,43 @@ autocmd("WinLeave", {
     pattern = "*",
     callback = function()
         vim.opt.cursorline = false
+        -- Set inactive window highlight
+        vim.opt_local.winhighlight = "Normal:InactiveWindow,NormalNC:InactiveWindow"
+    end,
+})
+
+-- Initialize highlighting for existing windows on startup
+autocmd("VimEnter", {
+    group = bg_highlight_group,
+    pattern = "*",
+    callback = function()
+        -- Define highlight groups for active/inactive windows
+        -- Active window: darker background
+        vim.api.nvim_set_hl(0, "ActiveWindow", { bg = "#1e222a" })
+        -- Inactive window: same as normal background
+        vim.api.nvim_set_hl(0, "InactiveWindow", {})
+        -- Apply to current window
+        vim.opt_local.winhighlight = "Normal:ActiveWindow,NormalNC:InactiveWindow"
+    end,
+})
+
+-- Apply highlighting when buffer enters a window (e.g., when opening file from tree)
+autocmd("BufWinEnter", {
+    group = bg_highlight_group,
+    pattern = "*",
+    callback = function()
+        -- Small delay to ensure window is ready
+        vim.schedule(function()
+            -- Apply highlighting to all windows
+            for _, win in ipairs(vim.api.nvim_list_wins()) do
+                local current_win = vim.api.nvim_get_current_win()
+                if win == current_win then
+                    vim.api.nvim_win_set_option(win, "winhighlight", "Normal:ActiveWindow,NormalNC:InactiveWindow")
+                else
+                    vim.api.nvim_win_set_option(win, "winhighlight", "Normal:InactiveWindow,NormalNC:InactiveWindow")
+                end
+            end
+        end)
     end,
 })
 
