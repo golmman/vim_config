@@ -322,6 +322,53 @@ autocmd("BufReadPost", {
     end,
 })
 
+-- Clean up empty buffer windows when opening a file from nvim-tree
+autocmd("BufReadPost", {
+    pattern = "*",
+    callback = function()
+        -- Wait for window layout to settle
+        vim.defer_fn(function()
+            local current_buf = vim.api.nvim_get_current_buf()
+            
+            -- Only clean up if current buffer is a real file
+            if vim.bo[current_buf].buftype ~= "" then
+                return
+            end
+            
+            -- Find windows with empty unnamed buffers (but not nvim-tree or terminal)
+            local current_win = vim.api.nvim_get_current_win()
+            for _, win in ipairs(vim.api.nvim_list_wins()) do
+                if win ~= current_win then
+                    local buf = vim.api.nvim_win_get_buf(win)
+                    local ft = vim.bo[buf].filetype
+                    local buftype = vim.bo[buf].buftype
+                    local bufname = vim.fn.bufname(buf)
+                    
+                    -- Close window if it's an empty regular buffer
+                    if ft ~= "NvimTree" and ft ~= "terminal" and buftype == "" then
+                        if bufname == "" and vim.bo[buf].modified == false then
+                            -- This is an empty unnamed buffer - close the window
+                            -- But first check if there are other windows besides tree and current
+                            local win_count = 0
+                            for _, w in ipairs(vim.api.nvim_list_wins()) do
+                                local b = vim.api.nvim_win_get_buf(w)
+                                if vim.bo[b].filetype ~= "NvimTree" then
+                                    win_count = win_count + 1
+                                end
+                            end
+                            
+                            -- Only close if there are multiple non-tree windows
+                            if win_count > 1 then
+                                pcall(vim.api.nvim_win_close, win, true)
+                            end
+                        end
+                    end
+                end
+            end
+        end, 200)
+    end,
+})
+
 -- Save folds for next session (optional, disabled by default)
 -- autocmd("BufWritePost", {
 --     pattern = "*",

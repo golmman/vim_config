@@ -46,10 +46,9 @@ function SetupIde()
         vim.cmd("wincmd l")
     end
     
-    -- If original buffer was empty, use a new one, otherwise restore it
-    if is_empty then
-        vim.cmd("enew")
-    elseif vim.api.nvim_buf_is_valid(current_buf) then
+    -- If original buffer was empty, just leave the window empty
+    -- nvim-tree will replace it when opening a file
+    if not is_empty and vim.api.nvim_buf_is_valid(current_buf) then
         vim.api.nvim_win_set_buf(0, current_buf)
     end
     
