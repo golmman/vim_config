@@ -368,7 +368,10 @@ require("lazy").setup({
                     theme = "onedark",
                     component_separators = { left = "", right = "" },
                     section_separators = { left = "", right = "" },
-                    disabled_filetypes = { "NvimTree" },
+                    disabled_filetypes = {
+                        statusline = { "NvimTree" },
+                        tabline = { "NvimTree", "terminal" },
+                    },
                     always_divide_middle = true,
                     globalstatus = true,
                 },
@@ -398,6 +401,7 @@ require("lazy").setup({
                         max_length = vim.o.columns,
                         filetype_names = {
                             NvimTree = "",
+                            terminal = "",
                         },
                         buffers_color = {
                             active = "lualine_b_normal",
@@ -408,6 +412,11 @@ require("lazy").setup({
                             alternate_file = "",
                             directory = "",
                         },
+                        filter = function(buffer)
+                            local buftype = vim.bo[buffer].buftype
+                            local filetype = vim.bo[buffer].filetype
+                            return buftype ~= "terminal" and filetype ~= "NvimTree"
+                        end,
                     } },
                     lualine_b = {},
                     lualine_c = {},
