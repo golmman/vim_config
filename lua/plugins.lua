@@ -164,7 +164,7 @@ require("lazy").setup({
                 enable = true,
                 disable = function(lang, buf)
                     local max_filesize = 100 * 1024 -- 100 KB
-                    local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+                    local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(buf))
                     if ok and stats and stats.size > max_filesize then
                         return true
                     end
@@ -306,28 +306,6 @@ require("lazy").setup({
         event = { "BufWritePre" },
         config = function()
             local conform = require("conform")
-            conform.format({
-                lsp_fallback = true,
-                async = false,
-                timeout_ms = 500,
-            })
-
-            local formatters = {
-                css = { "prettier" },
-                html = { "prettier" },
-                javascript = { "prettier" },
-                json = { "prettier" },
-                markdown = { "prettier" },
-                python = { "black" },
-                rust = { "rustfmt" },
-                scala = { "scalafmt" },
-                svelte = { "prettier" },
-                terraform = { "terraform_fmt" },
-                typescript = { "prettier" },
-                yaml = { "prettier" },
-            }
-
-            conform.formatters_enums.prettier = { "prettier_detailed" }
 
             conform.setup({
                 format_on_save = {
@@ -335,12 +313,21 @@ require("lazy").setup({
                     async = false,
                     timeout_ms = 500,
                 },
-                formatters_by_ft = formatters,
+                formatters_by_ft = {
+                    css = { "prettier" },
+                    html = { "prettier" },
+                    javascript = { "prettier" },
+                    json = { "prettier" },
+                    markdown = { "prettier" },
+                    python = { "black" },
+                    rust = { "rustfmt" },
+                    scala = { "scalafmt" },
+                    svelte = { "prettier" },
+                    terraform = { "terraform_fmt" },
+                    typescript = { "prettier" },
+                    yaml = { "prettier" },
+                },
             })
-
-            vim.keymap.set("n", "<leader>cf", function()
-                conform.format({ lsp_fallback = true, async = false, timeout_ms = 500 })
-            end, { desc = "Format with conform" })
         end,
     },
 
@@ -419,12 +406,6 @@ require("lazy").setup({
         end,
     },
 
-    -- File type detection
-    {
-        "sheerun/vim-polyglot",
-        event = { "BufReadPost", "BufNewFile" },
-    },
-
     -- Svelte
     {
         "evanleck/vim-svelte",
@@ -465,12 +446,6 @@ require("lazy").setup({
     {
         "rust-lang/rust.vim",
         ft = "rust",
-    },
-
-    -- Format & lint command for terraform
-    {
-        "MunifTanjim/nui.nvim",
-        lazy = true,
     },
 }, {
     change_detection = {

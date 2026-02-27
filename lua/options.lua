@@ -1,6 +1,6 @@
 -- General Neovim options
 
--- Disable netrw (using NERDTree instead)
+-- Disable netrw (using nvim-tree instead)
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 

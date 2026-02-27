@@ -32,62 +32,8 @@ vim.keymap.set("t", "<C-l>", "<C-\\><C-N><C-w>l", { desc = "Move to right window
 vim.keymap.set("t", "<C-[>", "<C-\\><C-N>", { desc = "Exit terminal" })
 vim.keymap.set("t", "<Esc>", "<C-\\><C-N>", { desc = "Exit terminal" })
 
--- Buffer navigation
-vim.keymap.set("n", "<leader>bb", "<cmd>Telescope buffers<CR>", { desc = "List buffers" })
-vim.keymap.set("n", "<leader>bn", "<cmd>bnext<CR>", { desc = "Next buffer" })
-vim.keymap.set("n", "<leader>bp", "<cmd>bprevious<CR>", { desc = "Previous buffer" })
-vim.keymap.set("n", "<leader>bd", "<cmd>bdelete<CR>", { desc = "Delete buffer" })
-vim.keymap.set("n", "<leader>bl", "<cmd>ls<CR>", { desc = "List all buffers" })
-
--- Code navigation
-vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
-vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "Go to references" })
-vim.keymap.set("n", "gI", vim.lsp.buf.implementation, { desc = "Go to implementation" })
-vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
-vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Show hover" })
-vim.keymap.set("n", "gR", vim.lsp.buf.rename, { desc = "Rename symbol" })
-vim.keymap.set("n", "gA", vim.lsp.buf.code_action, { desc = "Code action" })
-vim.keymap.set("n", "<leader>cf", function()
-    vim.lsp.buf.format({ async = true })
-end, { desc = "Format code" })
-vim.keymap.set("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Show diagnostics" })
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic" })
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
-
--- Telescope fuzzy finder
-vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<CR>", { desc = "Find files" })
-vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<CR>", { desc = "Search text" })
-vim.keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { desc = "List buffers" })
-vim.keymap.set("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { desc = "Help tags" })
-vim.keymap.set("n", "<leader>fr", "<cmd>Telescope oldfiles<CR>", { desc = "Recent files" })
-
--- Git integration (gitsigns)
-vim.keymap.set("n", "]c", function()
-    if vim.wo.diff then return "]c" end
-    vim.schedule(function()
-        require("gitsigns").next_hunk()
-    end)
-    return "<Ignore>"
-end, { expr = true, desc = "Next git hunk" })
-vim.keymap.set("n", "[c", function()
-    if vim.wo.diff then return "[c" end
-    vim.schedule(function()
-        require("gitsigns").prev_hunk()
-    end)
-    return "<Ignore>"
-end, { expr = true, desc = "Previous git hunk" })
-vim.keymap.set("n", "<leader>hs", function()
-    require("gitsigns").stage_hunk()
-end, { desc = "Stage hunk" })
-vim.keymap.set("n", "<leader>hr", function()
-    require("gitsigns").reset_hunk()
-end, { desc = "Reset hunk" })
-vim.keymap.set("n", "<leader>hp", function()
-    require("gitsigns").preview_hunk()
-end, { desc = "Preview hunk" })
-
 -- File operations
-vim.keymap.set("n", "<leader>e", "<cmd>NERDTreeToggle<CR>", { desc = "Toggle file explorer" })
+vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
 vim.keymap.set("n", "<leader>QQ", "<cmd>qa<CR>", { desc = "Quit all" })
 
 -- Editor basics
@@ -197,20 +143,11 @@ vim.keymap.set("n", "<A-c>", function()
     end
 end, { desc = "Run linter" })
 
--- Clipboard operations
-vim.keymap.set("n", "P", '"+p', { desc = "Paste from clipboard" })
-vim.keymap.set("v", "P", '"+p', { desc = "Paste from clipboard" })
-vim.keymap.set("n", "p", '"_p', { desc = "Paste (no register)" })
-vim.keymap.set("v", "p", '"_p', { desc = "Paste (no register)" })
-
 -- Navigation
 vim.keymap.set("n", "j", "v:count ? 'j' : 'gj'", { expr = true, desc = "Move down" })
 vim.keymap.set("n", "k", "v:count ? 'k' : 'gk'", { expr = true, desc = "Move up" })
 vim.keymap.set("n", "0", "^", { desc = "Move to first non-blank" })
-vim.keymap.set("n", "^", "^", { desc = "Move to first non-blank" })
 vim.keymap.set("n", "$", "g_", { desc = "Move to last non-blank" })
-vim.keymap.set("n", "H", "gk", { desc = "Move to top" })
-vim.keymap.set("n", "L", "gj", { desc = "Move to bottom" })
 
 -- Quickfix navigation
 vim.keymap.set("n", "[q", "<cmd>cprev<CR>", { desc = "Previous quickfix" })
@@ -227,11 +164,6 @@ vim.keymap.set("c", "<C-n>", "<Down>", { desc = "History down" })
 -- Insert mode improvements
 vim.keymap.set("i", "<C-a>", "<Home>", { desc = "Move to start of line" })
 vim.keymap.set("i", "<C-e>", "<End>", { desc = "Move to end of line" })
-
--- LSP signature help
-vim.keymap.set("i", "<A-s>", function()
-    vim.lsp.buf.signature_help()
-end, { desc = "Signature help" })
 
 -- Expand region (text objects)
 vim.keymap.set({ "n", "v" }, "<M-,>", "<Plug>(expand_region_shrink)", { desc = "Shrink selection" })

@@ -127,15 +127,3 @@ vim.keymap.set("n", "<leader>ql", vim.diagnostic.setloclist, { desc = "Set diagn
 vim.keymap.set("i", "<A-s>", function()
     vim.lsp.buf.signature_help()
 end, { desc = "Signature help" })
-
--- Auto-format on save for LSP files
-vim.api.nvim_create_autocmd("BufWritePre", {
-    pattern = "*",
-    callback = function()
-        if vim.bo.filetype == "rust" then
-            vim.lsp.buf.format({ async = true })
-        elseif vim.bo.filetype == "scala" then
-            vim.lsp.buf.format({ async = true })
-        end
-    end,
-})
