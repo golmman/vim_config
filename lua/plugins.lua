@@ -189,13 +189,36 @@ require("lazy").setup({
             { "<leader>e", "<cmd>NvimTreeToggle<CR>", desc = "Toggle file explorer" },
         },
         config = function()
+            local api = require("nvim-tree.api")
+
+            local function on_attach(bufnr)
+                local function opts(desc)
+                    return { desc = desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+                end
+
+                -- Apply default mappings first
+                api.config.mappings.default_on_attach(bufnr)
+
+                -- Override <CR> and o to open file but stay in nvim-tree
+                vim.keymap.set("n", "<CR>", function()
+                    api.node.open.edit()
+                    api.tree.focus()
+                end, opts("Open and stay in tree"))
+                vim.keymap.set("n", "o", function()
+                    api.node.open.edit()
+                    api.tree.focus()
+                end, opts("Open and stay in tree"))
+            end
+
             require("nvim-tree").setup({
+                on_attach = on_attach,
                 sort_by = "case_sensitive",
                 view = {
                     width = 30,
                 },
                 renderer = {
                     group_empty = true,
+                    add_trailing = true,
                     icons = {
                         show = {
                             file = false,

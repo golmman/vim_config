@@ -74,9 +74,16 @@ vim.keymap.set("n", "<F4>", ":lua ToggleIde()<CR>", { desc = "Toggle IDE mode" }
 -- Toggle modifiable
 vim.keymap.set("n", "<A-space>", ":lua ToggleModifiable()<CR>", { desc = "Toggle modifiable" })
 
--- Buffer management
-vim.keymap.set("n", "<A-h>", ":bprev<CR>", { noremap = true, silent = true, desc = "Previous buffer" })
-vim.keymap.set("n", "<A-l>", ":bnext<CR>", { noremap = true, silent = true, desc = "Next buffer" })
+-- Buffer management (only in file buffers, not nvim-tree or terminal)
+local function is_file_buffer()
+    return vim.bo.buftype == "" and vim.bo.filetype ~= "NvimTree"
+end
+vim.keymap.set("n", "<A-h>", function()
+    if is_file_buffer() then vim.cmd("bprev") end
+end, { noremap = true, silent = true, desc = "Previous buffer" })
+vim.keymap.set("n", "<A-l>", function()
+    if is_file_buffer() then vim.cmd("bnext") end
+end, { noremap = true, silent = true, desc = "Next buffer" })
 vim.keymap.set("n", "<A-p>", ":lua DeleteCurrentBuffer()<CR>", { noremap = true, silent = true, desc = "Delete current buffer" })
 vim.keymap.set("n", "<A-o>", ":lua CloseHiddenBuffers()<CR>", { noremap = true, silent = true, desc = "Close hidden buffers" })
 

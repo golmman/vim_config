@@ -75,13 +75,21 @@ autocmd("FileType", {
     end,
 })
 
--- Hide terminal buffer
+-- Hide terminal buffer from tabline
 autocmd("TermOpen", {
     pattern = "*",
     callback = function()
         if vim.fn.bufwinnr("") > 0 then
             vim.opt_local.buflisted = false
         end
+    end,
+})
+
+-- Hide NvimTree buffer from tabline
+autocmd("FileType", {
+    pattern = "NvimTree",
+    callback = function()
+        vim.opt_local.buflisted = false
     end,
 })
 
