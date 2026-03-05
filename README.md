@@ -25,7 +25,7 @@ curl -sSf 'https://raw.githubusercontent.com/golmman/vim_config/main/install.sh'
 1. Clone or download this repository
 2. Copy all files to `$HOME/.config/nvim/`:
    ```bash
-   cp -r init.lua lua/ ~/.config/nvim/
+   cp -r init.lua lua ~/.config/nvim/
    ```
 3. Start Neovim - lazy.nvim will automatically install all plugins on first launch
 
