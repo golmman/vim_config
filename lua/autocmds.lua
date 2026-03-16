@@ -87,14 +87,6 @@ autocmd({ "TermOpen", "BufEnter" }, {
     end,
 })
 
--- Hide NvimTree buffer from tabline
-autocmd("FileType", {
-    pattern = "NvimTree",
-    callback = function()
-        vim.opt_local.buflisted = false
-    end,
-})
-
 -- Filetype autocommands
 autocmd("FileType", {
     pattern = "help",
@@ -111,14 +103,7 @@ autocmd("FileType", {
 })
 
 autocmd("FileType", {
-    pattern = "gitcommit",
-    callback = function()
-        vim.opt_local.colorcolumn = { 80 }
-    end,
-})
-
-autocmd("FileType", {
-    pattern = "gitrebase",
+    pattern = { "gitcommit", "gitrebase" },
     callback = function()
         vim.opt_local.colorcolumn = { 80 }
     end,

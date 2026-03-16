@@ -106,15 +106,6 @@ vim.keymap.set("n", "<enter>", "o<esc>", { desc = "Insert blank line" })
 vim.keymap.set("t", "<A-k>", "<up>", { desc = "History up" })
 vim.keymap.set("t", "<A-j>", "<down>", { desc = "History down" })
 
--- LSP keymaps (Alt-based from original)
-vim.keymap.set("i", "<A-w>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", { desc = "Signature help" })
-vim.keymap.set("n", "<A-w>", "<cmd>lua vim.lsp.buf.hover()<CR>", { desc = "Hover" })
-vim.keymap.set("n", "<A-e>", "<cmd>lua vim.lsp.buf.code_action()<CR>", { desc = "Code action" })
-vim.keymap.set("n", "<A-r>", "<cmd>lua vim.lsp.buf.rename()<CR>", { desc = "Rename" })
-vim.keymap.set("n", "<A-i>", "<cmd>lua vim.lsp.buf.implementation()<CR>", { desc = "Go to implementation" })
-vim.keymap.set("n", "<A-d>", "<cmd>lua vim.lsp.buf.definition()<CR>", { desc = "Go to definition" })
-vim.keymap.set("n", "<A-a>", "<cmd>lua vim.diagnostic.open_float()<CR>", { desc = "Show diagnostic" })
-
 -- Formatter keymaps by filetype (Alt-f)
 vim.keymap.set("n", "<A-f>", function()
     local ft = vim.bo.filetype
@@ -171,7 +162,3 @@ vim.keymap.set("c", "<C-n>", "<Down>", { desc = "History down" })
 -- Insert mode improvements
 vim.keymap.set("i", "<C-a>", "<Home>", { desc = "Move to start of line" })
 vim.keymap.set("i", "<C-e>", "<End>", { desc = "Move to end of line" })
-
--- Expand region (text objects)
-vim.keymap.set({ "n", "v" }, "<M-,>", "<Plug>(expand_region_shrink)", { desc = "Shrink selection" })
-vim.keymap.set({ "n", "v" }, "<M-.>", "<Plug>(expand_region_expand)", { desc = "Expand selection" })

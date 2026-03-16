@@ -185,9 +185,6 @@ require("lazy").setup({
         dependencies = {
             "nvim-tree/nvim-web-devicons",
         },
-        keys = {
-            { "<leader>e", "<cmd>NvimTreeToggle<CR>", desc = "Toggle file explorer" },
-        },
         config = function()
             local api = require("nvim-tree.api")
 
@@ -438,46 +435,10 @@ require("lazy").setup({
         end,
     },
 
-    -- Svelte
-    {
-        "evanleck/vim-svelte",
-        ft = "svelte",
-    },
-
-    -- Terraform
-    {
-        "hashivim/vim-terraform",
-        ft = { "terraform", "hcl" },
-    },
-
-    -- TOML
-    {
-        "cespare/vim-toml",
-        ft = "toml",
-    },
-
     -- Hurl
     {
         "golmman/hurl_vim",
         ft = "hurl",
-    },
-
-    -- JavaScript/TypeScript
-    {
-        "pangloss/vim-javascript",
-        ft = { "javascript", "typescript", "javascriptreact", "typescriptreact" },
-    },
-
-    -- JSON
-    {
-        "elzr/vim-json",
-        ft = "json",
-    },
-
-    -- Rust
-    {
-        "rust-lang/rust.vim",
-        ft = "rust",
     },
 }, {
     change_detection = {
