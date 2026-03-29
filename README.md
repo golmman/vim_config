@@ -5,10 +5,10 @@ A modern Neovim configuration written in Lua.
 ## Features
 
 - **Plugin Management**: Uses `lazy.nvim` for fast and efficient plugin loading
-- **LSP Support**: Built-in Language Server Protocol configuration for TypeScript, Svelte, Scala, and Rust
+- **LSP Support**: Built-in Language Server Protocol configuration for TypeScript, Svelte, Scala, Rust, Python, and Go
 - **Syntax Highlighting**: Tree-sitter powered syntax highlighting
-- **Fuzzy Finding**: FZF integration for file and text search
-- **File Explorer**: NERDTree for file navigation
+- **Fuzzy Finding**: Telescope with fzf-native for file and text search
+- **File Explorer**: nvim-tree for file navigation
 - **Auto-formatting**: Prettier, Black, and LSP formatting support
 - **Custom IDE Mode**: Toggle terminal and file explorer with F4
 
@@ -31,10 +31,17 @@ curl -sSf 'https://raw.githubusercontent.com/golmman/vim_config/main/install.sh'
 
 ## Requirements
 
-- Neovim >= 0.8.0
+- Neovim >= 0.11.0
 - Git (for cloning plugins)
 - Node.js (for LSP servers and formatters)
-- Optional: `rg` (ripgrep) for faster searching with FZF
+- [ripgrep](https://github.com/BurntSushi/ripgrep#installation) (required for Telescope live grep)
+- [prettier](https://prettier.io/) (formatting for JS, TS, CSS, HTML, JSON, Markdown, YAML, Svelte)
+- Optional: [fd](https://github.com/sharkdp/fd#installation) (faster file finding for Telescope)
+
+On macOS:
+```bash
+brew install ripgrep fd
+```
 
 ## Structure
 
@@ -45,10 +52,10 @@ curl -sSf 'https://raw.githubusercontent.com/golmman/vim_config/main/install.sh'
     ├── options.lua       # General Neovim settings
     ├── keymaps.lua       # Custom keybindings
     ├── plugins.lua       # Plugin definitions and configuration
-    ├── lsp.lua          # LSP server configuration
-    ├── autocmds.lua     # Autocommands
-    ├── functions.lua    # Custom utility functions
-    └── todo_sync.lua    # Todo repository synchronization
+    ├── lsp.lua           # LSP server configuration
+    ├── autocmds.lua      # Autocommands
+    ├── functions.lua     # Custom utility functions
+    └── todo_sync.lua     # Todo repository synchronization
 ```
 
 ## Migration from init.vim

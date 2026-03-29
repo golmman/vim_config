@@ -1,5 +1,7 @@
 -- Modern Neovim configuration with lazy.nvim
 
+local keys = require("keymaps")
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({
@@ -33,20 +35,21 @@ require("lazy").setup({
     -- Fuzzy finder with better UI
     {
         "nvim-telescope/telescope.nvim",
-        dependencies = { "nvim-lua/plenary.nvim" },
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+        },
         cmd = "Telescope",
-        keys = {
-            { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find files" },
-            { "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Live grep" },
-            { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
-            { "<leader>fh", "<cmd>Telescope help_tags<cr>", desc = "Help tags" },
-        },
-        opts = {
-            defaults = {
-                sorting_strategy = "ascending",
-                path_display = { shorten = { len = 1 } },
-            },
-        },
+        config = function()
+            local telescope = require("telescope")
+            telescope.setup({
+                defaults = {
+                    sorting_strategy = "ascending",
+                    path_display = { shorten = { len = 1 } },
+                },
+            })
+            telescope.load_extension("fzf")
+        end,
     },
 
     -- Completion engine
@@ -62,38 +65,9 @@ require("lazy").setup({
         },
         config = function()
             local cmp = require("cmp")
-            local luasnip = require("luasnip")
 
             cmp.setup({
-                snippet = {
-                    expand = function(args)
-                        luasnip.lsp_expand(args.body)
-                    end,
-                },
-                mapping = cmp.mapping.preset.insert({
-                    ["<CR>"] = cmp.mapping.confirm({ select = true }),
-                    ["<Tab>"] = cmp.mapping(function(fallback)
-                        if cmp.visible() then
-                            cmp.select_next_item()
-                        elseif luasnip.expand_or_locally_jumpable() then
-                            luasnip.expand_or_jump()
-                        else
-                            fallback()
-                        end
-                    end, { "i", "s" }),
-                    ["<S-Tab>"] = cmp.mapping(function(fallback)
-                        if cmp.visible() then
-                            cmp.select_prev_item()
-                        elseif luasnip.locally_jumpable(-1) then
-                            luasnip.jump(-1)
-                        else
-                            fallback()
-                        end
-                    end, { "i", "s" }),
-                    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-                    ["<C-f>"] = cmp.mapping.scroll_docs(4),
-                    ["<C-e>"] = cmp.mapping.abort(),
-                }),
+                mapping = keys.cmp_mapping(cmp),
                 sources = {
                     { name = "nvim_lsp" },
                     { name = "buffer" },
@@ -115,19 +89,6 @@ require("lazy").setup({
                     { name = "cmdline" },
                 },
             })
-        end,
-    },
-
-    -- Snippet engine
-    {
-        "L3MON4D3/LuaSnip",
-        version = "v2.*",
-        build = "make install_jsregexp",
-        dependencies = {
-            "rafamadriz/friendly-snippets",
-        },
-        config = function()
-            require("luasnip.loaders.from_vscode").lazy_load()
         end,
     },
 
@@ -188,27 +149,10 @@ require("lazy").setup({
         config = function()
             local api = require("nvim-tree.api")
 
-            local function on_attach(bufnr)
-                local function opts(desc)
-                    return { desc = desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
-                end
-
-                -- Apply default mappings first
-                api.config.mappings.default_on_attach(bufnr)
-
-                -- Override <CR> and o to open file but stay in nvim-tree
-                vim.keymap.set("n", "<CR>", function()
-                    api.node.open.edit()
-                    api.tree.focus()
-                end, opts("Open and stay in tree"))
-                vim.keymap.set("n", "o", function()
-                    api.node.open.edit()
-                    api.tree.focus()
-                end, opts("Open and stay in tree"))
-            end
-
             require("nvim-tree").setup({
-                on_attach = on_attach,
+                on_attach = function(bufnr)
+                    keys.nvim_tree_on_attach(api, bufnr)
+                end,
                 sort_by = "case_sensitive",
                 view = {
                     width = 30,
@@ -251,10 +195,7 @@ require("lazy").setup({
     -- Expand region (text objects)
     {
         "terryma/vim-expand-region",
-        keys = {
-            { "<M-,>", "<Plug>(expand_region_shrink)", mode = { "n", "v" }, desc = "Shrink selection" },
-            { "<M-.>", "<Plug>(expand_region_expand)", mode = { "n", "v" }, desc = "Expand selection" },
-        },
+        keys = keys.expand_region,
         init = function()
             vim.g.expand_region_text_objects = {
                 iw = 0,
@@ -275,48 +216,6 @@ require("lazy").setup({
                 ["a)"] = 1,
                 at = 1,
             }
-        end,
-    },
-
-    -- Git integration
-    {
-        "lewis6991/gitsigns.nvim",
-        event = { "BufReadPost", "BufNewFile" },
-        config = function()
-            require("gitsigns").setup({
-                on_attach = function(bufnr)
-                    local gs = package.loaded.gitsigns
-
-                    local function map(mode, l, r, opts)
-                        opts = opts or {}
-                        opts.buffer = bufnr
-                        vim.keymap.set(mode, l, r, opts)
-                    end
-
-                    map("n", "]c", function()
-                        if vim.wo.diff then return "]c" end
-                        vim.schedule(function()
-                            gs.next_hunk()
-                        end)
-                        return "<Ignore>"
-                    end, { expr = true, desc = "Next git hunk" })
-
-                    map("n", "[c", function()
-                        if vim.wo.diff then return "[c" end
-                        vim.schedule(function()
-                            gs.prev_hunk()
-                        end)
-                        return "<Ignore>"
-                    end, { expr = true, desc = "Previous git hunk" })
-
-                    map("n", "<leader>hs", gs.stage_hunk, { desc = "Stage git hunk" })
-                    map("n", "<leader>hr", gs.reset_hunk, { desc = "Reset git hunk" })
-                    map("n", "<leader>hp", gs.preview_hunk, { desc = "Preview git hunk" })
-                    map("n", "<leader>hb", function()
-                        gs.blame_line({ full = true })
-                    end, { desc = "Blame line" })
-                end,
-            })
         end,
     },
 

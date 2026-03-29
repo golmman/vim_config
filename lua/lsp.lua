@@ -1,8 +1,7 @@
--- Enhanced LSP configuration with nvim-cmp integration
+-- LSP configuration
 
--- Enable snippet completion in capabilities
+-- LSP capabilities
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 -- Global LSP setup
 vim.lsp.set_log_level("warn")
@@ -106,21 +105,3 @@ vim.lsp.config["gopls"] = {
     },
 }
 vim.lsp.enable("gopls")
-
--- General LSP keymaps
-vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
-vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "Go to references" })
-vim.keymap.set("n", "gI", vim.lsp.buf.implementation, { desc = "Go to implementation" })
-vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
-vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Show hover" })
-vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code action" })
-vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, { desc = "Rename" })
-vim.keymap.set("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Show diagnostic" })
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to prev diagnostic" })
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic" })
-vim.keymap.set("n", "<leader>ql", vim.diagnostic.setloclist, { desc = "Set diagnostic location list" })
-
--- Signature help
-vim.keymap.set("i", "<A-s>", function()
-    vim.lsp.buf.signature_help()
-end, { desc = "Signature help" })

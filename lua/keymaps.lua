@@ -1,4 +1,5 @@
 -- Enhanced keymaps with modern conventions
+local M = {}
 
 -- Leader key
 vim.g.mapleader = ","
@@ -162,3 +163,75 @@ vim.keymap.set("c", "<C-n>", "<Down>", { desc = "History down" })
 -- Insert mode improvements
 vim.keymap.set("i", "<C-a>", "<Home>", { desc = "Move to start of line" })
 vim.keymap.set("i", "<C-e>", "<End>", { desc = "Move to end of line" })
+
+-- Telescope
+vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find files" })
+vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Live grep" })
+vim.keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Buffers" })
+vim.keymap.set("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", { desc = "Help tags" })
+
+-- LSP
+vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
+vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "Go to references" })
+vim.keymap.set("n", "gI", vim.lsp.buf.implementation, { desc = "Go to implementation" })
+vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
+vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Show hover" })
+vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code action" })
+vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, { desc = "Rename" })
+vim.keymap.set("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Show diagnostic" })
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to prev diagnostic" })
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic" })
+vim.keymap.set("n", "<leader>ql", vim.diagnostic.setloclist, { desc = "Set diagnostic location list" })
+vim.keymap.set("i", "<A-s>", function()
+    vim.lsp.buf.signature_help()
+end, { desc = "Signature help" })
+
+-- Expand region (lazy-loaded via plugins.lua)
+M.expand_region = {
+    { "<M-,>", "<Plug>(expand_region_shrink)", mode = { "n", "v" }, desc = "Shrink selection" },
+    { "<M-.>", "<Plug>(expand_region_expand)", mode = { "n", "v" }, desc = "Expand selection" },
+}
+
+-- Completion (nvim-cmp)
+M.cmp_mapping = function(cmp)
+    return cmp.mapping.preset.insert({
+        ["<CR>"] = cmp.mapping.confirm({ select = true }),
+        ["<Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+                cmp.select_next_item()
+            else
+                fallback()
+            end
+        end, { "i", "s" }),
+        ["<S-Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+                cmp.select_prev_item()
+            else
+                fallback()
+            end
+        end, { "i", "s" }),
+        ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+        ["<C-f>"] = cmp.mapping.scroll_docs(4),
+        ["<C-e>"] = cmp.mapping.abort(),
+    })
+end
+
+-- Nvim-tree buffer-local overrides
+M.nvim_tree_on_attach = function(api, bufnr)
+    local function opts(desc)
+        return { desc = desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+    end
+
+    api.config.mappings.default_on_attach(bufnr)
+
+    vim.keymap.set("n", "<CR>", function()
+        api.node.open.edit()
+        api.tree.focus()
+    end, opts("Open and stay in tree"))
+    vim.keymap.set("n", "o", function()
+        api.node.open.edit()
+        api.tree.focus()
+    end, opts("Open and stay in tree"))
+end
+
+return M
