@@ -109,20 +109,6 @@ autocmd("FileType", {
     end,
 })
 
-autocmd("FileType", {
-    pattern = "fugitive",
-    callback = function()
-        vim.opt_local.number = false
-    end,
-})
-
-autocmd("FileType", {
-    pattern = "fugitiveblame",
-    callback = function()
-        vim.opt_local.number = false
-    end,
-})
-
 -- Resize terminal after window resize
 autocmd("VimResized", {
     pattern = "*",
