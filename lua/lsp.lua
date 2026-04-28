@@ -4,7 +4,7 @@
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 
 -- Global LSP setup
-vim.lsp.set_log_level("warn")
+vim.lsp.log.set_level(vim.lsp.log.levels.WARN)
 
 -- Diagnostic signs
 local signs = {

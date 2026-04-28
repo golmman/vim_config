@@ -287,7 +287,63 @@ autocmd("BufEnter", {
 -- Auto-save on cursor hold
 autocmd("CursorHold", {
     pattern = "*",
-    command = "wa",
+    command = "silent! wa",
+})
+
+-- When entering a buffer whose file has been deleted on disk, wipe it and
+-- switch to the next existing file buffer. This prevents auto-save errors
+-- on stale buffers.
+autocmd({ "BufReadPost", "BufWritePost" }, {
+    pattern = "*",
+    callback = function(args)
+        vim.b[args.buf].file_on_disk = true
+    end,
+})
+
+autocmd("BufEnter", {
+    pattern = "*",
+    callback = function(args)
+        local bufnr = args.buf
+
+        -- Only regular file buffers (skip terminal, NvimTree, etc.)
+        if vim.bo[bufnr].buftype ~= "" then return end
+        -- Only buffers that were previously backed by a real file on disk
+        if not vim.b[bufnr].file_on_disk then return end
+
+        local name = vim.api.nvim_buf_get_name(bufnr)
+        if name == "" or vim.fn.filereadable(name) == 1 then return end
+
+        -- File has been deleted externally. Forward to the next valid file
+        -- buffer, then wipe this one. Deferred to avoid running during the
+        -- BufEnter dispatch itself.
+        vim.schedule(function()
+            if not vim.api.nvim_buf_is_valid(bufnr) then return end
+            if vim.api.nvim_get_current_buf() ~= bufnr then
+                vim.cmd("silent! bwipeout! " .. bufnr)
+                return
+            end
+
+            local next_buf
+            for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+                if buf ~= bufnr
+                    and vim.api.nvim_buf_is_valid(buf)
+                    and vim.bo[buf].buflisted
+                    and vim.bo[buf].buftype == ""
+                then
+                    local bufname = vim.api.nvim_buf_get_name(buf)
+                    if bufname ~= "" and vim.fn.filereadable(bufname) == 1 then
+                        next_buf = buf
+                        break
+                    end
+                end
+            end
+
+            if next_buf then
+                vim.api.nvim_set_current_buf(next_buf)
+            end
+            vim.cmd("silent! bwipeout! " .. bufnr)
+        end)
+    end,
 })
 
 
