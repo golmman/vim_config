@@ -43,6 +43,7 @@ vim.opt.completeopt = { "menuone", "noselect" }
 -- Search settings
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
+vim.opt.hlsearch = true
 
 -- Autosave
 vim.opt.updatetime = 200

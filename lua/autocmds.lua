@@ -162,21 +162,6 @@ autocmd("CursorMovedI", {
     end,
 })
 
-local highlight_group = augroup("HighlightSearch", { clear = true })
-autocmd("CmdlineEnter", {
-    group = highlight_group,
-    pattern = { "/", "?" },
-    callback = function()
-        vim.opt.hlsearch = true
-    end,
-})
-autocmd("CmdlineLeave", {
-    group = highlight_group,
-    pattern = { "/", "?" },
-    callback = function()
-        vim.opt.hlsearch = false
-    end,
-})
 
 -- Set cursorline and window highlighting
 local bg_highlight_group = augroup("BgHighlight", { clear = true })
