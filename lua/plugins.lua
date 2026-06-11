@@ -291,6 +291,20 @@ require("lazy").setup({
                     lualine_a = { {
                         "buffers",
                         show_filename_only = true,
+                        fmt = function(name, context)
+                            local bufs = vim.fn.getbufinfo({ buflisted = 1 })
+                            local count = 0
+                            for _, b in ipairs(bufs) do
+                                if vim.fn.fnamemodify(b.name, ":t") == name then
+                                    count = count + 1
+                                end
+                            end
+                            if count < 2 then return name end
+                            local path = vim.api.nvim_buf_get_name(context.bufnr)
+                            local parent = vim.fn.fnamemodify(path, ":h:t")
+                            if parent == "" or parent == "." then return name end
+                            return parent .. "/" .. name
+                        end,
                         hide_filename_extension = false,
                         show_modified_status = true,
                         mode = 2,
