@@ -195,7 +195,13 @@ M.expand_region = {
 -- Completion (nvim-cmp)
 M.cmp_mapping = function(cmp)
     return cmp.mapping.preset.insert({
-        ["<CR>"] = cmp.mapping.confirm({ select = true }),
+        ["<CR>"] = cmp.mapping(function(fallback)
+            if cmp.visible() and cmp.get_active_entry() then
+                cmp.confirm({ select = false })
+            else
+                fallback()
+            end
+        end, { "i", "s" }),
         ["<Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_next_item()
