@@ -65,12 +65,18 @@ require("lazy").setup({
         },
         config = function()
             local cmp = require("cmp")
+            local buffer_source = {
+                name = "buffer",
+                option = {
+                    keyword_pattern = [[\k\+]],
+                },
+            }
 
             cmp.setup({
                 mapping = keys.cmp_mapping(cmp),
                 sources = {
                     { name = "nvim_lsp" },
-                    { name = "buffer" },
+                    buffer_source,
                     { name = "path" },
                 },
             })
@@ -78,7 +84,7 @@ require("lazy").setup({
             cmp.setup.cmdline({ "/", "?" }, {
                 mapping = cmp.mapping.preset.cmdline(),
                 sources = {
-                    { name = "buffer" },
+                    buffer_source,
                 },
             })
 
