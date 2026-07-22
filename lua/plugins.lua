@@ -155,11 +155,54 @@ require("lazy").setup({
         config = function()
             local api = require("nvim-tree.api")
 
+            local function natural_cmp(a, b)
+                local a_name, b_name = a.name:lower(), b.name:lower()
+                if a_name == b_name then
+                    return false
+                end
+                local i, j = 1, 1
+                local len_a, len_b = #a_name, #b_name
+                while i <= len_a and j <= len_b do
+                    local a_char = a_name:sub(i, i)
+                    local b_char = b_name:sub(j, j)
+                    if a_char:match("%d") and b_char:match("%d") then
+                        local a_num = a_name:match("^%d+", i)
+                        local b_num = b_name:match("^%d+", j)
+                        local a_n, b_n = tonumber(a_num), tonumber(b_num)
+                        if a_n ~= b_n then
+                            return a_n < b_n
+                        end
+                        i = i + #a_num
+                        j = j + #b_num
+                    else
+                        if a_char ~= b_char then
+                            return a_char < b_char
+                        end
+                        i = i + 1
+                        j = j + 1
+                    end
+                end
+                return len_a < len_b
+            end
+
+            local function sort_nodes(nodes)
+                table.sort(nodes, function(a, b)
+                    local a_dir = a.type == "directory" and 0 or 1
+                    local b_dir = b.type == "directory" and 0 or 1
+                    if a_dir ~= b_dir then
+                        return a_dir < b_dir
+                    end
+                    return natural_cmp(a, b)
+                end)
+            end
+
             require("nvim-tree").setup({
                 on_attach = function(bufnr)
                     keys.nvim_tree_on_attach(api, bufnr)
                 end,
-                sort_by = "case_sensitive",
+                sort = {
+                    sorter = sort_nodes,
+                },
                 view = {
                     width = 30,
                 },
