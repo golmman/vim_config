@@ -18,54 +18,42 @@ function SetTerminalSize()
     end
 end
 
-function SetupIde()
-    -- Show directory name as title
+function SetupIdeTraditional()
     vim.opt.titlestring = "nvim | " .. vim.fn.fnamemodify(vim.fn.getcwd(), ":t") .. "/"
 
-    -- Check if there's already a terminal - don't recreate
     for _, buf in ipairs(vim.api.nvim_list_bufs()) do
         if vim.bo[buf].buftype == "terminal" then
             return
         end
     end
 
-    -- Get current buffer and check if it's empty
     local current_buf = vim.api.nvim_get_current_buf()
     local is_empty = vim.fn.bufname(current_buf) == "" and vim.bo[current_buf].modified == false
-    
-    -- Open tree - this will create the left sidebar
+
     vim.cmd("NvimTreeOpen")
-    
-    -- Go to the window to the right of tree
     vim.cmd("wincmd l")
-    
-    -- If we're still showing the tree (wincmd l didn't work), create a split
+
     local new_buf = vim.api.nvim_win_get_buf(0)
     if vim.bo[new_buf].filetype == "NvimTree" then
         vim.cmd("vsplit")
         vim.cmd("wincmd l")
     end
-    
-    -- If original buffer was empty, just leave the window empty
-    -- nvim-tree will replace it when opening a file
+
     if not is_empty and vim.api.nvim_buf_is_valid(current_buf) then
         vim.api.nvim_win_set_buf(0, current_buf)
     end
-    
-    -- Now split this window for terminal
+
     vim.cmd("below 15sp")
     vim.cmd("term bash")
     vim.bo.filetype = "terminal"
     vim.b.my_term = 1
-    
-    -- Go back to code window
+
     vim.cmd("wincmd k")
 end
 
-function DestroyIde()
+function DestroyIdeTraditional()
     vim.opt.titlestring = "nvim | %f"
     vim.cmd("NvimTreeClose")
-    -- Close all terminal buffers
     for _, buf in ipairs(vim.api.nvim_list_bufs()) do
         if vim.bo[buf].buftype == "terminal" then
             vim.cmd("silent! bdelete! " .. buf)
@@ -73,14 +61,78 @@ function DestroyIde()
     end
 end
 
-function ToggleIde()
-    vim.g.is_ide_active = vim.g.is_ide_active or false
-    if vim.g.is_ide_active then
-        DestroyIde()
+function ToggleIdeTraditional()
+    vim.g.is_ide_traditional_active = vim.g.is_ide_traditional_active or false
+    if vim.g.is_ide_traditional_active then
+        DestroyIdeTraditional()
+        vim.g.is_ide_traditional_active = false
     else
-        SetupIde()
+        if vim.g.is_ide_vertical_active then
+            DestroyIdeVertical()
+            vim.g.is_ide_vertical_active = false
+        end
+        SetupIdeTraditional()
+        vim.g.is_ide_traditional_active = true
     end
-    vim.g.is_ide_active = not vim.g.is_ide_active
+end
+
+function SetupIdeVertical()
+    vim.opt.titlestring = "nvim | " .. vim.fn.fnamemodify(vim.fn.getcwd(), ":t") .. "/"
+
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.bo[buf].buftype == "terminal" then
+            return
+        end
+    end
+
+    local current_buf = vim.api.nvim_get_current_buf()
+    local is_empty = vim.fn.bufname(current_buf) == "" and vim.bo[current_buf].modified == false
+
+    vim.cmd("NvimTreeOpen")
+    vim.cmd("wincmd l")
+
+    local new_buf = vim.api.nvim_win_get_buf(0)
+    if vim.bo[new_buf].filetype == "NvimTree" then
+        vim.cmd("vsplit")
+        vim.cmd("wincmd l")
+    end
+
+    if not is_empty and vim.api.nvim_buf_is_valid(current_buf) then
+        vim.api.nvim_win_set_buf(0, current_buf)
+    end
+
+    vim.cmd("vsplit")
+    vim.cmd("wincmd l")
+    vim.cmd("term bash")
+    vim.bo.filetype = "terminal"
+    vim.b.my_term = 1
+
+    vim.cmd("wincmd h")
+end
+
+function DestroyIdeVertical()
+    vim.opt.titlestring = "nvim | %f"
+    vim.cmd("NvimTreeClose")
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.bo[buf].buftype == "terminal" then
+            vim.cmd("silent! bdelete! " .. buf)
+        end
+    end
+end
+
+function ToggleIdeVertical()
+    vim.g.is_ide_vertical_active = vim.g.is_ide_vertical_active or false
+    if vim.g.is_ide_vertical_active then
+        DestroyIdeVertical()
+        vim.g.is_ide_vertical_active = false
+    else
+        if vim.g.is_ide_traditional_active then
+            DestroyIdeTraditional()
+            vim.g.is_ide_traditional_active = false
+        end
+        SetupIdeVertical()
+        vim.g.is_ide_vertical_active = true
+    end
 end
 
 function ToggleModifiable()

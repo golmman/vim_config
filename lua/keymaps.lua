@@ -70,7 +70,8 @@ vim.keymap.set("n", "<leader>tl", ":set list!<CR>", { desc = "Toggle list charac
 vim.keymap.set("n", "<leader>tc", ":set cursorline!<CR>", { desc = "Toggle cursor line" })
 
 -- IDE mode toggle
-vim.keymap.set("n", "<F4>", ":lua ToggleIde()<CR>", { desc = "Toggle IDE mode" })
+vim.keymap.set("n", "<F3>", ":lua ToggleIdeVertical()<CR>", { desc = "Toggle vertical IDE mode" })
+vim.keymap.set("n", "<F4>", ":lua ToggleIdeTraditional()<CR>", { desc = "Toggle traditional IDE mode" })
 
 -- Toggle modifiable
 vim.keymap.set("n", "<A-space>", ":lua ToggleModifiable()<CR>", { desc = "Toggle modifiable" })
