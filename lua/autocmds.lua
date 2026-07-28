@@ -180,7 +180,9 @@ autocmd("WinLeave", {
     group = bg_highlight_group,
     pattern = "*",
     callback = function()
-        vim.opt.cursorline = false
+        if vim.bo.filetype ~= "NvimTree" then
+            vim.opt.cursorline = false
+        end
         -- Set inactive window highlight
         vim.opt_local.winhighlight = "Normal:InactiveWindow,NormalNC:InactiveWindow"
     end,

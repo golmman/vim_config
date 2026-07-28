@@ -233,6 +233,10 @@ require("lazy").setup({
                 hijack_directories = {
                     enable = false,
                 },
+                update_focused_file = {
+                    enable = true,
+                    update_root = false,
+                },
                 git = {
                     enable = true,
                     ignore = false,
