@@ -1,6 +1,11 @@
 -- Custom functions
 
+vim.g.ide_mode = vim.g.ide_mode or "none"
+
 function SetTerminalSize()
+    if vim.g.ide_mode ~= "traditional" then
+        return
+    end
     local termids = {}
     for i = 1, vim.fn.bufnr("$") do
         if vim.fn.bufexists(i) == 1 and vim.fn.getbufvar(i, "my_term", 0) == 1 then
@@ -62,17 +67,15 @@ function DestroyIdeTraditional()
 end
 
 function ToggleIdeTraditional()
-    vim.g.is_ide_traditional_active = vim.g.is_ide_traditional_active or false
-    if vim.g.is_ide_traditional_active then
+    if vim.g.ide_mode == "traditional" then
         DestroyIdeTraditional()
-        vim.g.is_ide_traditional_active = false
+        vim.g.ide_mode = "none"
     else
-        if vim.g.is_ide_vertical_active then
+        if vim.g.ide_mode == "vertical" then
             DestroyIdeVertical()
-            vim.g.is_ide_vertical_active = false
         end
         SetupIdeTraditional()
-        vim.g.is_ide_traditional_active = true
+        vim.g.ide_mode = "traditional"
     end
 end
 
@@ -121,17 +124,15 @@ function DestroyIdeVertical()
 end
 
 function ToggleIdeVertical()
-    vim.g.is_ide_vertical_active = vim.g.is_ide_vertical_active or false
-    if vim.g.is_ide_vertical_active then
+    if vim.g.ide_mode == "vertical" then
         DestroyIdeVertical()
-        vim.g.is_ide_vertical_active = false
+        vim.g.ide_mode = "none"
     else
-        if vim.g.is_ide_traditional_active then
+        if vim.g.ide_mode == "traditional" then
             DestroyIdeTraditional()
-            vim.g.is_ide_traditional_active = false
         end
         SetupIdeVertical()
-        vim.g.is_ide_vertical_active = true
+        vim.g.ide_mode = "vertical"
     end
 end
 
