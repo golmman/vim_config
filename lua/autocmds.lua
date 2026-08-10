@@ -109,10 +109,10 @@ autocmd("FileType", {
     end,
 })
 
--- Resize terminal after window resize
+-- Resize IDE windows after window resize
 autocmd("VimResized", {
     pattern = "*",
-    callback = SetTerminalSize,
+    callback = SetIdeLayout,
 })
 
 -- NvimTree settings

@@ -3,6 +3,7 @@
 -- Disable netrw (using nvim-tree instead)
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
+vim.g.nvim_tree_width = 30
 
 -- Colors
 vim.opt.termguicolors = true

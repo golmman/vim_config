@@ -2,7 +2,7 @@
 
 vim.g.ide_mode = vim.g.ide_mode or "none"
 
-function SetTerminalSize()
+function SetTraditionalIdeLayout()
     if vim.g.ide_mode ~= "traditional" then
         return
     end
@@ -20,6 +20,36 @@ function SetTerminalSize()
             vim.fn.win_execute(winid, "res 15")
             vim.cmd("redraw!")
         end
+    end
+end
+
+function SetVerticalIdeLayout()
+    if vim.g.ide_mode ~= "vertical" then
+        return
+    end
+
+    local tree_win
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+        if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "NvimTree" then
+            tree_win = win
+            break
+        end
+    end
+    if not tree_win then
+        return
+    end
+
+    vim.fn.win_execute(
+        tree_win,
+        "setlocal winfixwidth | vertical resize " .. vim.g.nvim_tree_width .. " | horizontal wincmd ="
+    )
+end
+
+function SetIdeLayout()
+    if vim.g.ide_mode == "traditional" then
+        SetTraditionalIdeLayout()
+    elseif vim.g.ide_mode == "vertical" then
+        SetVerticalIdeLayout()
     end
 end
 

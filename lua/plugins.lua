@@ -204,7 +204,7 @@ require("lazy").setup({
                     sorter = sort_nodes,
                 },
                 view = {
-                    width = 30,
+                    width = vim.g.nvim_tree_width,
                 },
                 renderer = {
                     group_empty = true,
