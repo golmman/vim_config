@@ -205,10 +205,12 @@ require("lazy").setup({
                 },
                 view = {
                     width = vim.g.nvim_tree_width,
+                    cursorline = true,
                 },
                 renderer = {
                     group_empty = true,
                     add_trailing = true,
+                    highlight_opened_files = "all",
                     icons = {
                         show = {
                             file = false,

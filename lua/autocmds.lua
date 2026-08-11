@@ -166,6 +166,24 @@ autocmd("CursorMovedI", {
 -- Set cursorline and window highlighting
 local bg_highlight_group = augroup("BgHighlight", { clear = true })
 
+local function set_winhl(win, active)
+    local normal = active and "ActiveWindow" or "InactiveWindow"
+    local current = vim.wo[win].winhighlight or ""
+    local parts = {}
+    local seen = {}
+    for item in current:gmatch("([^,]+)") do
+        item = vim.trim(item)
+        local group = item:match("^([^:]+):")
+        if group and group ~= "Normal" and group ~= "NormalNC" and not seen[group] then
+            seen[group] = true
+            table.insert(parts, item)
+        end
+    end
+    table.insert(parts, "Normal:" .. normal)
+    table.insert(parts, "NormalNC:InactiveWindow")
+    vim.wo[win].winhighlight = table.concat(parts, ",")
+end
+
 -- Apply highlights when entering/leaving windows
 autocmd("WinEnter", {
     group = bg_highlight_group,
@@ -173,7 +191,7 @@ autocmd("WinEnter", {
     callback = function()
         vim.opt.cursorline = true
         -- Set active window highlight (darker background)
-        vim.opt_local.winhighlight = "Normal:ActiveWindow,NormalNC:InactiveWindow"
+        set_winhl(0, true)
     end,
 })
 autocmd("WinLeave", {
@@ -184,7 +202,7 @@ autocmd("WinLeave", {
             vim.opt.cursorline = false
         end
         -- Set inactive window highlight
-        vim.opt_local.winhighlight = "Normal:InactiveWindow,NormalNC:InactiveWindow"
+        set_winhl(0, false)
     end,
 })
 
@@ -194,12 +212,16 @@ autocmd("VimEnter", {
     pattern = "*",
     callback = function()
         -- Define highlight groups for active/inactive windows
-        -- Active window: darker background
-        vim.api.nvim_set_hl(0, "ActiveWindow", { bg = "#1e222a" })
+        -- Active window: dark purple background
+        vim.api.nvim_set_hl(0, "ActiveWindow", { bg = "#1f172b" })
         -- Inactive window: same as normal background
         vim.api.nvim_set_hl(0, "InactiveWindow", {})
+        -- Currently opened file in nvim-tree: dark yellow background
+        vim.api.nvim_set_hl(0, "NvimTreeOpenedHL", { bg = "#4a3b0b" })
+        -- Currently shown file line in nvim-tree: dark yellow background
+        vim.api.nvim_set_hl(0, "NvimTreeCursorLine", { bg = "#4a3b0b" })
         -- Apply to current window
-        vim.opt_local.winhighlight = "Normal:ActiveWindow,NormalNC:InactiveWindow"
+        set_winhl(0, true)
     end,
 })
 
@@ -209,13 +231,9 @@ autocmd("BufWinEnter", {
     pattern = "*",
     callback = function()
         vim.schedule(function()
+            local current_win = vim.api.nvim_get_current_win()
             for _, win in ipairs(vim.api.nvim_list_wins()) do
-                local current_win = vim.api.nvim_get_current_win()
-                if win == current_win then
-                    vim.wo[win].winhighlight = "Normal:ActiveWindow,NormalNC:InactiveWindow"
-                else
-                    vim.wo[win].winhighlight = "Normal:InactiveWindow,NormalNC:InactiveWindow"
-                end
+                set_winhl(win, win == current_win)
             end
         end)
     end,
