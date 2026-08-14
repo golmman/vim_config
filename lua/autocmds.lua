@@ -3,6 +3,47 @@
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
+-- Disable terminal alternate-scroll mode (DECSET 1007) when the builtin TUI
+-- attaches. This stops the terminal from translating the scroll wheel into
+-- <Up>/<Down> key events while Neovim is running, so `mouse=""` fully disables
+-- the mouse. Re-enable on TUI detach for other programs like less/man.
+local tui_chans = {}
+local function set_alternate_scroll(enable)
+    io.stdout:write(enable and "\x1b[?1007h" or "\x1b[?1007l")
+    io.stdout:flush()
+end
+
+local function maybe_disable_tui(info)
+    if info and info.id and info.client and info.client.name == "nvim-tui" and not tui_chans[info.id] then
+        tui_chans[info.id] = true
+        set_alternate_scroll(false)
+    end
+end
+
+local mouse_group = augroup("DisableAlternateScroll", { clear = true })
+autocmd("UIEnter", {
+    group = mouse_group,
+    callback = function()
+        maybe_disable_tui(vim.api.nvim_get_chan_info(vim.v.event.chan))
+    end,
+})
+autocmd("ChanInfo", {
+    group = mouse_group,
+    callback = function()
+        maybe_disable_tui(vim.v.event.info)
+    end,
+})
+autocmd("UILeave", {
+    group = mouse_group,
+    callback = function()
+        local chan = vim.v.event.chan
+        if tui_chans[chan] then
+            tui_chans[chan] = nil
+            set_alternate_scroll(true)
+        end
+    end,
+})
+
 -- File type specific indentation
 autocmd("FileType", {
     pattern = { "javascript", "json", "markdown", "typescript", "typescriptreact", "typescript.tsx", "vim", "lua", "bash", "zsh", "yaml", "yml", "terraform", "hcl", "sql" },
