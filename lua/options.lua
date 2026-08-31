@@ -34,6 +34,7 @@ vim.g.markdown_folding = 1
 -- Wrap and linebreak
 vim.opt.wrap = true
 vim.opt.linebreak = true
+vim.opt.smoothscroll = true
 
 -- Disable mouse
 vim.opt.mouse = ""
