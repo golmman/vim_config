@@ -46,4 +46,13 @@ Still the same issue: when i enter the terminal split a new tab "bash" is added.
 In normal mode i can navigate inside wrapped lines with `jk`.
 I want that this works in visual mode as well.
 
+---
 
+Analoguous to the splits which are triggered by the F3 and F4 keys i want the following splits on F5 ("Agent Mode"):
+* base behaviour is the same as F3, but the rightmost split (terminal) is horizontally split into two terminals which each take 50% of the available space
+* window resize keeps the split size ratios
+
+
+---
+
+Instead of "mode" lets call it "split"
