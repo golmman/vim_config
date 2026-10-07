@@ -254,9 +254,9 @@ autocmd("VimEnter", {
     callback = function()
         -- Define highlight groups for active/inactive windows
         -- Active window: dark purple background
-        vim.api.nvim_set_hl(0, "ActiveWindow", { bg = "#311e4f" })
+        vim.api.nvim_set_hl(0, "ActiveWindow", { bg = "#000000" })
         -- Inactive window: same as normal background
-        vim.api.nvim_set_hl(0, "InactiveWindow", {})
+        vim.api.nvim_set_hl(0, "InactiveWindow", {bg = "#333333" })
         -- Currently opened file in nvim-tree: dark yellow background
         vim.api.nvim_set_hl(0, "NvimTreeOpenedHL", { bg = "#4a3b0b" })
         -- Currently shown file line in nvim-tree: dark yellow background
