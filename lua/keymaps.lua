@@ -144,8 +144,8 @@ vim.keymap.set("n", "<A-c>", function()
 end, { desc = "Run linter" })
 
 -- Navigation
-vim.keymap.set("n", "j", "v:count ? 'j' : 'gj'", { expr = true, desc = "Move down" })
-vim.keymap.set("n", "k", "v:count ? 'k' : 'gk'", { expr = true, desc = "Move up" })
+vim.keymap.set({ "n", "v" }, "j", "v:count ? 'j' : 'gj'", { expr = true, desc = "Move down" })
+vim.keymap.set({ "n", "v" }, "k", "v:count ? 'k' : 'gk'", { expr = true, desc = "Move up" })
 vim.keymap.set("n", "0", "^", { desc = "Move to first non-blank" })
 vim.keymap.set("n", "$", "g_", { desc = "Move to last non-blank" })
 

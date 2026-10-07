@@ -41,4 +41,9 @@ agent: opencode Big Pickle
 ---
 Still the same issue: when i enter the terminal split a new tab "bash" is added. When i leave (go back to the code split) the tab disappears. Instead i want that no tab is added and the last opened tab remains highlighted.
 
+---
+
+In normal mode i can navigate inside wrapped lines with `jk`.
+I want that this works in visual mode as well.
+
 
