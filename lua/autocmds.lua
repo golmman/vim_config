@@ -225,6 +225,22 @@ local function set_winhl(win, active)
     vim.wo[win].winhighlight = table.concat(parts, ",")
 end
 
+-- Define highlight groups for active/inactive windows; tint them purple
+-- while the terminal is unfocused
+local function set_window_colors(focused)
+    -- Active window: dark purple background
+    vim.api.nvim_set_hl(0, "ActiveWindow", { bg = focused and "#000000" or "#1a0d26" })
+    -- Inactive window: same as normal background
+    vim.api.nvim_set_hl(0, "InactiveWindow", { bg = focused and "#333333" or "#3d2b4d" })
+end
+
+autocmd({ "FocusGained", "FocusLost" }, {
+    group = bg_highlight_group,
+    callback = function(args)
+        set_window_colors(args.event == "FocusGained")
+    end,
+})
+
 -- Apply highlights when entering/leaving windows
 autocmd("WinEnter", {
     group = bg_highlight_group,
@@ -252,11 +268,7 @@ autocmd("VimEnter", {
     group = bg_highlight_group,
     pattern = "*",
     callback = function()
-        -- Define highlight groups for active/inactive windows
-        -- Active window: dark purple background
-        vim.api.nvim_set_hl(0, "ActiveWindow", { bg = "#000000" })
-        -- Inactive window: same as normal background
-        vim.api.nvim_set_hl(0, "InactiveWindow", {bg = "#333333" })
+        set_window_colors(true)
         -- Currently opened file in nvim-tree: dark yellow background
         vim.api.nvim_set_hl(0, "NvimTreeOpenedHL", { bg = "#4a3b0b" })
         -- Currently shown file line in nvim-tree: dark yellow background

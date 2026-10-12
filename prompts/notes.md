@@ -56,3 +56,8 @@ Analoguous to the splits which are triggered by the F3 and F4 keys i want the fo
 ---
 
 Instead of "mode" lets call it "split"
+
+---
+
+I run neovim in a terminal (usually alacritty on macos or Konsole on fedora).
+I want that the `ActiveWindow` and `InactiveWindow` background colors get a dark purple touch when the terminal loses focus and goes back to their current values when focus i gained.
